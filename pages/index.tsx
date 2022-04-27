@@ -2,9 +2,11 @@ import { useMemo, useState, useCallback, ReactNode, FC } from "react";
 import { NextPage } from "next";
 import { ethers } from "ethers";
 import { Iframe } from "../components/Iframe";
+import keccak256 from "keccak256";
+import MerkleTree from "merkletreejs";
+import { addresses } from "../data/whiteListedAddresses";
 const AGGREEMENT_IPFS_HASH = "QmTYC4wiCZ7n8zTKVKdAFAY4Q8fe8Se3sqve1yjK9FCd1Y"; // TODO update this with pinata link
 const AGGREEMENT_IPFS_URL = `https://ipfs.io/ipfs/${AGGREEMENT_IPFS_HASH}`;
-
 const CITIZEN_NFT_CONTRACT_ADDRESS =
   "0x7eef591a6cc0403b9652e98e88476fe1bf31ddeb";
 const CITIZEN_NFT_IDS = [7, 42, 69];
@@ -13,6 +15,11 @@ const Home: NextPage = () => {
   const [address, setAddress] = useState<string>();
   const [nftCount, setNftCount] = useState<number>();
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
+  const leaves = addresses.map((x) => keccak256(x));
+  const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
+  const buf2hex = (x: Buffer) => "0x" + x.toString("hex");
+
+  // console.log(buf2hex(tree.getRoot()));
 
   const handleLoad = () => {
     setIsIframeLoaded(true);
@@ -33,6 +40,12 @@ const Home: NextPage = () => {
       ),
     [provider]
   );
+
+  function claim() {
+    const leaf = keccak256(address!); // address from wallet using walletconnect/metamask
+    const proof = tree.getProof(leaf).map((x) => buf2hex(x.data));
+    citizenContract.methods.safeMint(address, proof).send({ from: address }); // will be called on click of the mint button
+  }
 
   const connectWallet = useCallback(async () => {
     //TODO trkaplan check what happens when you visit with a browser that does not have metamask
@@ -78,6 +91,7 @@ const Home: NextPage = () => {
       <button onClick={connectWallet}>Connect</button>
       <p>NFT Count: {nftCount}</p>
       <p>Address: {address}</p>
+      <button onClick={claim}>Claim</button>
     </main>
   );
 };
