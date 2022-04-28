@@ -12,6 +12,12 @@ function MyApp({ Component, pageProps }: AppProps) {
           content="Read and approve the CityDAO Parcel-0 NFT Agreement"
         />
         <link rel="icon" href="/logo.jpeg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
+          rel="stylesheet"
+        />
       </Head>
       <Component {...pageProps} />
     </>

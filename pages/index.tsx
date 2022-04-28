@@ -5,11 +5,30 @@ import { Iframe } from "../components/Iframe";
 import keccak256 from "keccak256";
 import MerkleTree from "merkletreejs";
 import { addresses } from "../data/whiteListedAddresses";
+import { shortenWalletAddress } from "../utils";
 const AGGREEMENT_IPFS_HASH = "QmTYC4wiCZ7n8zTKVKdAFAY4Q8fe8Se3sqve1yjK9FCd1Y"; // TODO update this with pinata link
 const AGGREEMENT_IPFS_URL = `https://ipfs.io/ipfs/${AGGREEMENT_IPFS_HASH}`;
 const CITIZEN_NFT_CONTRACT_ADDRESS =
   "0x7eef591a6cc0403b9652e98e88476fe1bf31ddeb";
 const CITIZEN_NFT_IDS = [7, 42, 69];
+
+interface ConnectButtonProps {
+  enabled?: boolean;
+  onClick?(): void;
+  address?: string;
+}
+const ConnectButton: FC<ConnectButtonProps> = ({
+  enabled,
+  onClick,
+  address,
+}) => {
+  // TODO trkaplan disable if wallet is not installed
+  return (
+    <button disabled={!enabled} onClick={onClick} className="text-button">
+      {address ? shortenWalletAddress(address) : "Connect"}
+    </button>
+  );
+};
 
 const Home: NextPage = () => {
   const [address, setAddress] = useState<string>();
@@ -35,7 +54,7 @@ const Home: NextPage = () => {
     () =>
       new ethers.Contract(
         CITIZEN_NFT_CONTRACT_ADDRESS,
-        require("./contract.json").abi,
+        require("./../data/contract.json").abi,
         provider
       ),
     [provider]
@@ -68,31 +87,68 @@ const Home: NextPage = () => {
   }, [citizenContract, provider]);
 
   return (
-    <main>
-      <h1 className="text-center">
-        <span className="color-primary">CityDAO</span> Parcel-0
-      </h1>
-      <p className="text-center mt-1">
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rem,
-        cupiditate natus tempore explicabo minus quos quia corporis odio,
-        eveniet commodi recusandae quidem dolores aliquam nulla pariatur! Odio
-        ratione quidem debitis. .
-      </p>
-      <section className="aggreement-container">
-        {!isIframeLoaded && <b className="loader-bar">Loading...</b>}
-        <Iframe
-          width="100%"
-          height="100%"
-          url={AGGREEMENT_IPFS_URL}
-          onLoad={handleLoad}
-        />
-      </section>
-
-      <button onClick={connectWallet}>Connect</button>
-      <p>NFT Count: {nftCount}</p>
-      <p>Address: {address}</p>
-      <button onClick={claim}>Claim</button>
-    </main>
+    <>
+      <div className="page-header">
+        <div className="header-content">
+          <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
+          <div className="connect-button-container">
+            <ConnectButton
+              onClick={connectWallet}
+              address={address}
+              enabled={true}
+            />
+          </div>
+        </div>
+      </div>
+      <main>
+        <div className="page-content">
+          <div className="content-left">
+            <div className="left-header">
+              <div className="parcel-zero">Parcel Zero</div>
+              <div className="parcel-address">
+                <div className="address-line-1">Powell, Wyoming, 82435</div>
+                <div className="address-line-2">
+                  Section Number 13 Township 57N, Range 103W
+                </div>
+              </div>
+            </div>
+            <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
+          </div>
+          <div className="content-right">
+            {/* nftCount */}
+            <button onClick={claim}>Claim Plots</button>
+            <div className="properties">
+              <div className="property">
+                <div className="propName">TOTAL PLOTS</div>
+                <div className="propVal">TBD</div>
+              </div>
+              <div className="property">
+                <div className="propName">PARCEL SIZE</div>
+                <div className="propVal">40 ACRES</div>
+              </div>
+              <div className="property">
+                <div className="propName">TOKEN</div>
+                <div className="propVal">PARCEL-0</div>
+              </div>
+              <div className="property">
+                <div className="propName">USE</div>
+                <div className="propVal">CONSERVATION</div>
+              </div>
+              <div className="property">
+                <div className="propName">ACCESS</div>
+                <div className="propVal">PUBLIC</div>
+              </div>
+              <div className="property">
+                <div className="propName">LICENSE</div>
+                <div className="propVal">
+                  <a href="# ">VIEW ON IPFS</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
   );
 };
 
