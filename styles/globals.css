@@ -46,10 +46,12 @@ main {
   align-items: center;
   display: flex;
 }
-.text-button {
-  background-color: transparent;
+.text-button,.text-button:hover {
   color: #f4f4f4;
   font-size: 12px;
+}
+.text-button,.text-button:hover {
+  background-color: transparent;
 }
 .parcel-zero {
   padding-top: 2px;
