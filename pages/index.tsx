@@ -8,10 +8,8 @@ import { addresses } from "../data/whiteListedAddresses";
 import { shortenWalletAddress } from "../utils";
 const AGGREEMENT_IPFS_HASH = "QmTYC4wiCZ7n8zTKVKdAFAY4Q8fe8Se3sqve1yjK9FCd1Y"; // TODO update this with pinata link
 const AGGREEMENT_IPFS_URL = `https://ipfs.io/ipfs/${AGGREEMENT_IPFS_HASH}`;
-const CITIZEN_NFT_CONTRACT_ADDRESS =
-  "0x7eef591a6cc0403b9652e98e88476fe1bf31ddeb";
-const CITIZEN_NFT_IDS = [7, 42, 69];
-
+const PARCEL0_NFT_CONTRACT_ADDRESS =
+  "0xce3E41B4dC206D52e55c1c2573Ce4324b27c8abc";
 interface ConnectButtonProps {
   enabled?: boolean;
   onClick?(): void;
@@ -29,16 +27,26 @@ const ConnectButton: FC<ConnectButtonProps> = ({
     </button>
   );
 };
-
+// https://docs.ethers.io/v5/api/utils/hashing/#utils-solidityKeccak256
+function hashToken(address: string, allowance: number) {
+  return Buffer.from(
+    ethers.utils
+      .solidityKeccak256(["address", "uint256"], [address, allowance])
+      .slice(2),
+    "hex"
+  );
+}
 const Home: NextPage = () => {
   const [address, setAddress] = useState<string>();
-  const [nftCount, setNftCount] = useState<number>();
+  const [eligibleNftCount, setEligibleNftCount] = useState<number>();
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
-  const leaves = addresses.map((x) => keccak256(x));
-  const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
-  const buf2hex = (x: Buffer) => "0x" + x.toString("hex");
-
-  // console.log(buf2hex(tree.getRoot()));
+  const tree = new MerkleTree(
+    Object.entries(addresses).map(([address, allowance]) =>
+      hashToken(address, Number(allowance))
+    ),
+    keccak256,
+    { sortPairs: true }
+  );
 
   const handleLoad = () => {
     setIsIframeLoaded(true);
@@ -46,24 +54,40 @@ const Home: NextPage = () => {
   const provider = useMemo(
     () =>
       typeof window !== "undefined"
-        ? new ethers.providers.Web3Provider((window as any).ethereum, "mainnet")
+        ? new ethers.providers.Web3Provider((window as any).ethereum, "rinkeby")
         : undefined,
     []
   );
-  const citizenContract = useMemo(
+
+  const parcel0Contract = useMemo(
     () =>
       new ethers.Contract(
-        CITIZEN_NFT_CONTRACT_ADDRESS,
+        PARCEL0_NFT_CONTRACT_ADDRESS,
         require("./../data/contract.json").abi,
         provider
       ),
     [provider]
   );
 
-  function claim() {
-    const leaf = keccak256(address!); // address from wallet using walletconnect/metamask
-    const proof = tree.getProof(leaf).map((x) => buf2hex(x.data));
-    citizenContract.methods.safeMint(address, proof).send({ from: address }); // will be called on click of the mint button
+  async function claim() {
+    const allowance: number = Number(addresses[address]);
+    const proof = tree.getHexProof(hashToken(address, allowance));
+
+    const signer = provider.getSigner();
+    const numberOfMinted = await parcel0Contract
+      .connect(signer)
+      .addressToMinted(address)
+      .then((result: ethers.BigNumber) => result.toNumber());
+    if (allowance > numberOfMinted) {
+      parcel0Contract
+        .connect(signer)
+        .allowlist(address, eligibleNftCount, allowance, proof)
+        .then((res) => {
+          console.log("response", res);
+        });
+    } else {
+      console.log("Already claimed!");
+    }
   }
 
   const connectWallet = useCallback(async () => {
@@ -74,17 +98,11 @@ const Home: NextPage = () => {
     const address = await signer.getAddress();
     if (!address) return;
 
-    const balances = await citizenContract.balanceOfBatch(
-      CITIZEN_NFT_IDS.map(() => address),
-      CITIZEN_NFT_IDS
-    );
-    const count = balances
-      .map(Number)
-      .reduce((a: number, b: number) => a + b, 0);
+    //setNftCount(count);
 
-    setNftCount(count);
+    setEligibleNftCount(1);
     setAddress(address);
-  }, [citizenContract, provider]);
+  }, [parcel0Contract, provider]);
 
   return (
     <>
