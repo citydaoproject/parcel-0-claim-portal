@@ -1,13 +1,23 @@
 // Reference (Thanks!)
 // https://dev.to/vtrpldn/how-to-make-an-extremely-reusable-tooltip-component-with-react-and-nothing-else-3pnk
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import PropTypes from "prop-types";
 
 import * as S from "./Tooltip.styled";
-
-export const Tooltip = ({ delay, children, direction, content }) => {
-  let timeout;
+type TooltipProps = {
+  delay?: number;
+  children: ReactNode;
+  direction: "top" | "right" | "bottom" | "left";
+  content: string;
+};
+export const Tooltip = ({
+  delay = 400,
+  children,
+  direction,
+  content,
+}: TooltipProps) => {
+  let timeout: NodeJS.Timeout;
   const [active, setActive] = useState(false);
 
   const showTip = () => {

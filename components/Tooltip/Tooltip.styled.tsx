@@ -45,8 +45,10 @@ const TooltipModifiers = {
     }
   `,
 };
-
-export const Tooltip = styled.div`
+interface TooltipProps {
+  direction: "top" | "right" | "bottom" | "left";
+}
+export const Tooltip = styled.div<TooltipProps>`
   ${({ direction }) => css`
     position: absolute;
     border-radius: 0.4rem;

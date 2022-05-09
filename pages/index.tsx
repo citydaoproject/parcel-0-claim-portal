@@ -6,7 +6,7 @@ import { ParcelProperties } from "../containers/ParcelProperties";
 import { getParcelProperties } from "../parcel-properties";
 import keccak256 from "keccak256";
 import MerkleTree from "merkletreejs";
-import { addresses } from "../data/whiteListedAddresses";
+import { addresses, Addresses } from "../data/whiteListedAddresses";
 import { shortenWalletAddress } from "../utils";
 import { MAX_NFT_TO_MINT } from "../contants";
 const PARCEL0_NFT_CONTRACT_ADDRESS =
@@ -33,7 +33,7 @@ const ConnectButton: FC<ConnectButtonProps> = ({
   );
 };
 // https://docs.ethers.io/v5/api/utils/hashing/#utils-solidityKeccak256
-function hashToken(address: string, allowance: number) {
+function hashToken(address: keyof Addresses, allowance: number) {
   return Buffer.from(
     ethers.utils
       .solidityKeccak256(["address", "uint256"], [address, allowance])
@@ -76,10 +76,10 @@ const Home: NextPage = () => {
   );
 
   async function claim() {
-    const allowance: number = Number(addresses[address]);
-    const proof = tree.getHexProof(hashToken(address, allowance));
+    const allowance: number = Number(addresses[address as keyof Addresses]);
+    const proof = tree.getHexProof(hashToken(address!, allowance));
 
-    const signer = provider.getSigner();
+    const signer = provider!.getSigner();
     const numberOfMinted = await parcel0Contract
       .connect(signer)
       .addressToMinted(address)
@@ -88,7 +88,7 @@ const Home: NextPage = () => {
       parcel0Contract
         .connect(signer)
         .allowlist(address, eligibleNftCount, allowance, proof)
-        .then((res) => {
+        .then((res: any) => {
           console.log("response", res);
         });
     } else {
