@@ -1,8 +1,12 @@
 :root {
   --color-text: #ffffff;
   --color-primary: #00ffa8;
+  --color-secondary: #b8bbba;
+  --color-dark-green: #3b865e;
   --color-bg: #04100b;
   --color-hover: #d7e5e0;
+  --color-disabled: #a7a7a7;
+  --color-disabled-text: gray;
   --width-max:1444px;
 }
 
@@ -53,14 +57,26 @@ main {
 .text-button,.text-button:hover {
   background-color: transparent;
 }
-.parcel-zero {
-  padding-top: 2px;
+.address-box {
+  padding-left: 56px;
   background-image: url("/../citydao-parcel-0-logo.png");
   background-repeat: no-repeat;
-  height: 38px;
-  padding-left: 60px;
-  font-size: 26px;
-  margin-top: 6px;
+}
+.parcel-zero {
+  font-size: 18px;
+  padding-bottom: 4px;
+}
+.address-box .address{
+  font-size:11px;
+  color:var(--color-secondary)
+}
+.link-external {
+  background-image: url("/../icons/link_arrow.png");
+  background-repeat: no-repeat;
+  background-position-x: right;
+  padding-right: 16px;
+  text-decoration: none;
+  background-position-y: 2px;
 }
 
 .left-header {
@@ -68,14 +84,14 @@ main {
   justify-content: space-between;
   margin-bottom: 18px;
 }
-.parcel-address {
-  background-image: url("/../globe.png");
-  background-repeat: no-repeat;
-  background-position-x: right;
+.message-box {
+  color: var(--color-secondary);
   height: 61px;
-  padding-right: 65px;
   text-align: right;
   padding-top: 7px;
+}
+.message-box .remaining-time {
+  color: var(--color-text);
 }
 .address-line-1 {
   font-size: 18px;
@@ -104,15 +120,33 @@ main {
 
 .content-right {
   width: 234px;
-  text-align: right;
 }
 .properties {
-  margin-top: 41px;
+  margin-top: 28px;
+}
+.property{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 17px;
+  border-bottom: 1px solid var(--color-dark-green);
+  padding-bottom: 22px;
+}
+.property img{
+  align-self: center;
+  vertical-align: bottom;
 }
 .propName {
-  padding-bottom: 12px;
-  margin-top: 22px;
-  color: var(--color-primary);
+  padding-bottom: 4px;
+  font-size: 14px;
+  line-height: 14px;
+  color: var(--color-secondary);
+  cursor: default;
+}
+.propName img{
+  margin-left: 2px;
+}
+.propVal {
+  color: var(--color-text);
 }
 h1 {
   font-size: 3rem;
@@ -139,9 +173,21 @@ button {
   color: var(--color-bg);
   background: var(--color-primary);
   transition: background .1s ease-in;
+  border: 2px solid transparent;
 }
 button:hover {
   background: var(--color-hover);
+}
+button:disabled {
+  background: var(--color-disabled);
+  color: var(--color-disabled-text);
+  text-shadow: 1px 1px #9d9d9d;
+  cursor:default;
+}
+button.border-button {
+  background: transparent;
+  color: white;
+  border: 2px solid var(--color-primary);
 }
 .aggreement-container {
   height: 450px;
