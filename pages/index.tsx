@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import { Iframe } from "../components/Iframe";
 import { ParcelProperties } from "../containers/ParcelProperties";
 import useWallet from "../hooks/useWallet";
+import { ParcelNFT__factory } from "@citydao/parcel-contracts/dist/types/contracts/factories/ParcelNFT__factory";
 
 import { getParcelProperties } from "../parcel-properties";
 import keccak256 from "keccak256";
@@ -12,7 +13,7 @@ import { addresses, Addresses } from "../data/whiteListedAddresses";
 import { shortenWalletAddress } from "../utils";
 import { MAX_NFT_TO_MINT } from "../contants";
 const PARCEL0_NFT_CONTRACT_ADDRESS =
-  "0xce3E41B4dC206D52e55c1c2573Ce4324b27c8abc";
+  "0x209723a65844093Ad769d557a22742e0f661959d";
 const numberOfMintedNFTs = 1; // TODO trkaplan calculate this value
 const LABEL_CLAIM_PLOTS = "Claim Plots";
 
@@ -47,7 +48,7 @@ function hashToken(address: keyof Addresses, allowance: number) {
 const Home: NextPage = () => {
   const [claimButtonText, setClaimButtonText] =
     useState<string>(LABEL_CLAIM_PLOTS);
-  const [eligibleNftCount, setEligibleNftCount] = useState<number>();
+  const [eligibleNftCount, setEligibleNftCount] = useState<number>(1);
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
   const {
     account: address,
@@ -62,7 +63,7 @@ const Home: NextPage = () => {
   }
   const tree = new MerkleTree(
     Object.entries(addresses).map(([address, allowance]) =>
-      hashToken(address, Number(allowance))
+      hashToken(address, allowance)
     ),
     keccak256,
     { sortPairs: true }
@@ -74,22 +75,21 @@ const Home: NextPage = () => {
 
   async function claim() {
     const signer = provider.getSigner();
-    const parcel0Contract = new ethers.Contract(
-      PARCEL0_NFT_CONTRACT_ADDRESS,
-      require("./../data/contract.json").abi,
-      provider
+    const parcel0Contract = new ParcelNFT__factory().attach(
+      PARCEL0_NFT_CONTRACT_ADDRESS
     );
-    const allowance: number = Number(addresses[address as keyof Addresses]);
+    const allowance: number = Number(
+      addresses[address?.toLowerCase() as keyof Addresses]
+    );
     const proof = tree.getHexProof(hashToken(address!, allowance));
-
     const numberOfMinted = await parcel0Contract
       .connect(signer)
-      .addressToMinted(address)
+      .alreadyClaimed(address)
       .then((result: ethers.BigNumber) => result.toNumber());
     if (allowance > numberOfMinted) {
       parcel0Contract
         .connect(signer)
-        .allowlist(address, eligibleNftCount, allowance, proof)
+        .allowListMint(eligibleNftCount, allowance, proof)
         .then((res: any) => {
           console.log("response", res);
         });
@@ -115,13 +115,13 @@ const Home: NextPage = () => {
         require("./../data/contract.json").abi,
         provider
       );
-      const allowance: number = Number(addresses[address as keyof Addresses]);
+      const allowance: number = addresses[address as keyof Addresses];
 
       //const proof = tree.getHexProof(hashToken(address, allowance));
 
       parcel0Contract
         .connect(signer)
-        .addressToMinted(address)
+        .alreadyClaimed(address)
         .then((result: ethers.BigNumber) => {
           const numberOfMinted = result.toNumber();
           if (allowance > numberOfMinted) {
@@ -133,7 +133,7 @@ const Home: NextPage = () => {
         });
     } catch (error) {
       console.log(error);
-      // TODO trkaplan handle internal and Wallet native errors.
+      // TODO trkaplan handle errors.
     }
   };
 
