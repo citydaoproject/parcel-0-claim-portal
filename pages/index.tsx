@@ -1,8 +1,10 @@
-import { useMemo, useState, useCallback, ReactNode, FC } from "react";
+import { useState, FC, useEffect } from "react";
 import { NextPage } from "next";
 import { ethers } from "ethers";
 import { Iframe } from "../components/Iframe";
 import { ParcelProperties } from "../containers/ParcelProperties";
+import useWallet from "../hooks/useWallet";
+
 import { getParcelProperties } from "../parcel-properties";
 import keccak256 from "keccak256";
 import MerkleTree from "merkletreejs";
@@ -12,6 +14,7 @@ import { MAX_NFT_TO_MINT } from "../contants";
 const PARCEL0_NFT_CONTRACT_ADDRESS =
   "0xce3E41B4dC206D52e55c1c2573Ce4324b27c8abc";
 const numberOfMintedNFTs = 1; // TODO trkaplan calculate this value
+const LABEL_CLAIM_PLOTS = "Claim Plots";
 
 interface ConnectButtonProps {
   enabled?: boolean;
@@ -42,10 +45,21 @@ function hashToken(address: keyof Addresses, allowance: number) {
   );
 }
 const Home: NextPage = () => {
-  const [address, setAddress] = useState<string>();
-  const [claimButtonText, setClaimButtonText] = useState<string>("Claim Plots");
+  const [claimButtonText, setClaimButtonText] =
+    useState<string>(LABEL_CLAIM_PLOTS);
   const [eligibleNftCount, setEligibleNftCount] = useState<number>();
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
+  const {
+    account: address,
+    web3Provider: provider,
+    connect,
+    disconnect,
+    chainId, // TODO trkaplan warn users connected to different chain for better UX
+  } = useWallet();
+  function onWalletDisconnect() {
+    disconnect();
+    setClaimButtonText(LABEL_CLAIM_PLOTS);
+  }
   const tree = new MerkleTree(
     Object.entries(addresses).map(([address, allowance]) =>
       hashToken(address, Number(allowance))
@@ -57,29 +71,17 @@ const Home: NextPage = () => {
   const handleLoad = () => {
     setIsIframeLoaded(true);
   };
-  const provider = useMemo(
-    () =>
-      typeof window !== "undefined"
-        ? new ethers.providers.Web3Provider((window as any).ethereum, "rinkeby")
-        : undefined,
-    []
-  );
-
-  const parcel0Contract = useMemo(
-    () =>
-      new ethers.Contract(
-        PARCEL0_NFT_CONTRACT_ADDRESS,
-        require("./../data/contract.json").abi,
-        provider
-      ),
-    [provider]
-  );
 
   async function claim() {
+    const signer = provider.getSigner();
+    const parcel0Contract = new ethers.Contract(
+      PARCEL0_NFT_CONTRACT_ADDRESS,
+      require("./../data/contract.json").abi,
+      provider
+    );
     const allowance: number = Number(addresses[address as keyof Addresses]);
     const proof = tree.getHexProof(hashToken(address!, allowance));
 
-    const signer = provider!.getSigner();
     const numberOfMinted = await parcel0Contract
       .connect(signer)
       .addressToMinted(address)
@@ -96,40 +98,44 @@ const Home: NextPage = () => {
     }
   }
 
-  const connectWallet = useCallback(async () => {
-    //TODO trkaplan check what happens when you visit with a browser that does not have metamask
-    if (!provider) return;
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner();
-    const address = await signer.getAddress();
-    if (!address) return;
-    setAddress(address);
+  //TODO trkaplan check what happens when you visit with a browser that does not have metamask
+  //setNftCount(count);
 
-    //setNftCount(count);
+  useEffect(() => {
+    if (address) {
+      checkEligibility(address);
+    }
+  }, [address]);
 
-    // set Claim Button Text
-    const allowance: number = Number(addresses[address]);
-    //const proof = tree.getHexProof(hashToken(address, allowance));
+  const checkEligibility = async (address: string) => {
+    try {
+      const signer = provider.getSigner();
+      const parcel0Contract = new ethers.Contract(
+        PARCEL0_NFT_CONTRACT_ADDRESS,
+        require("./../data/contract.json").abi,
+        provider
+      );
+      const allowance: number = Number(addresses[address as keyof Addresses]);
 
-    parcel0Contract
-      .connect(signer)
-      .addressToMinted(address)
-      .then((result: ethers.BigNumber) => {
-        const numberOfMinted = result.toNumber();
-        if (allowance > numberOfMinted) {
-          setEligibleNftCount(1);
-          alert("want to mint?");
-          /* parcel0Contract
-          .connect(signer)
-          .allowlist(address, allowance, allowance, proof)
-          .then((res) => {
+      //const proof = tree.getHexProof(hashToken(address, allowance));
+
+      parcel0Contract
+        .connect(signer)
+        .addressToMinted(address)
+        .then((result: ethers.BigNumber) => {
+          const numberOfMinted = result.toNumber();
+          if (allowance > numberOfMinted) {
+            setEligibleNftCount(1);
+            alert("want to mint?");
+          } else if (allowance === numberOfMinted) {
             setClaimButtonText(`${numberOfMinted} Plots Claimed`);
-          }); */
-        } else if (allowance === numberOfMinted) {
-          setClaimButtonText(`${numberOfMinted} Plots Claimed`);
-        }
-      });
-  }, [parcel0Contract, provider]);
+          }
+        });
+    } catch (error) {
+      console.log(error);
+      // TODO trkaplan handle internal and Wallet native errors.
+    }
+  };
 
   const parcelProperties = getParcelProperties(
     numberOfMintedNFTs,
@@ -141,11 +147,7 @@ const Home: NextPage = () => {
         <div className="header-content">
           <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
           <div className="connect-button-container">
-            <ConnectButton
-              onClick={connectWallet}
-              address={address}
-              enabled={true}
-            />
+            <ConnectButton onClick={connect} address={address} enabled={true} />
           </div>
         </div>
       </div>
@@ -162,10 +164,18 @@ const Home: NextPage = () => {
                 <span className="remaining-time">45 Days 00 Hours</span>{" "}
                 {/* TODO trkaplan use countdown component */}
                 <br />
+                {address && (
+                  <>
+                    {`You are connected, ${shortenWalletAddress(address)}, `}
+                    <a href="#" onClick={onWalletDisconnect}>
+                      disconnect
+                    </a>
+                  </>
+                )}
                 {!address && (
                   <span>
                     To claim{" "}
-                    <a href="#" onClick={connectWallet}>
+                    <a href="#" onClick={connect}>
                       connect your wallet
                     </a>
                   </span>
