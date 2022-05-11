@@ -1,10 +1,10 @@
 import { FC } from "react";
 
-export type MintedNftsViewProps = {
+interface IMintedNftsView {
   name: string;
   navigateToHome: () => void;
-};
-export const MintedNftsView: FC<MintedNftsViewProps> = ({
+}
+export const MintedNftsView: FC<IMintedNftsView> = ({
   name,
   navigateToHome,
 }) => (
