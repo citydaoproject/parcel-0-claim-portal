@@ -213,7 +213,10 @@ const Home: NextPage = () => {
             {currentView === VIEWS.INITIAL_VIEW ? (
               <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
             ) : (
-              <MintedNftsView name="sss" navigateToHome={navigateToHome} />
+              <MintedNftsView
+                numberOfNfts={numberOfMintedNfts}
+                navigateToHome={navigateToHome}
+              />
             )}
           </div>
           <div className="content-right">
