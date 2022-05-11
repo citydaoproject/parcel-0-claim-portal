@@ -51,7 +51,7 @@ function hashToken(address: keyof Addresses, allowance: number) {
 }
 const Home: NextPage = () => {
   const [numberOfMintedNfts, setNumberOfMintedNfts] = useState<number>(0);
-  const [eligibleNftCount, setEligibleNftCount] = useState<number>(1);
+  const [eligibleNftCount, setEligibleNftCount] = useState<number>(0);
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
   const {
