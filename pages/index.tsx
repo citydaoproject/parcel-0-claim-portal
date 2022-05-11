@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import { Iframe } from "../components/Iframe";
 import { ParcelProperties } from "../containers/ParcelProperties";
 import useWallet from "../hooks/useWallet";
+import { ParcelNFT__factory } from "@citydao/parcel-contracts/dist/types/contracts/factories/ParcelNFT__factory";
 
 import { getParcelProperties } from "../parcel-properties";
 import keccak256 from "keccak256";
@@ -11,16 +12,19 @@ import MerkleTree from "merkletreejs";
 import { addresses, Addresses } from "../data/whiteListedAddresses";
 import { shortenWalletAddress } from "../utils";
 import { MAX_NFT_TO_MINT } from "../contants";
+import { MintedNftsView } from "../components/MintedNftsView";
 const PARCEL0_NFT_CONTRACT_ADDRESS =
-  "0xce3E41B4dC206D52e55c1c2573Ce4324b27c8abc";
-const numberOfMintedNFTs = 1; // TODO trkaplan calculate this value
-const LABEL_CLAIM_PLOTS = "Claim Plots";
-
+  "0x209723a65844093Ad769d557a22742e0f661959d";
+const numberOfMintedNFTsSoFar = 1; // TODO trkaplan calculate this value
 interface ConnectButtonProps {
   enabled?: boolean;
   onClick?(): void;
   address?: string;
   text?: string;
+}
+enum VIEWS {
+  "INITIAL_VIEW",
+  "MINTED_NFTS",
 }
 
 const ConnectButton: FC<ConnectButtonProps> = ({
@@ -45,10 +49,10 @@ function hashToken(address: keyof Addresses, allowance: number) {
   );
 }
 const Home: NextPage = () => {
-  const [claimButtonText, setClaimButtonText] =
-    useState<string>(LABEL_CLAIM_PLOTS);
-  const [eligibleNftCount, setEligibleNftCount] = useState<number>();
+  const [numberOfMintedNfts, setNumberOfMintedNfts] = useState<number>(0);
+  const [eligibleNftCount, setEligibleNftCount] = useState<number>(1);
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
+  const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
   const {
     account: address,
     web3Provider: provider,
@@ -58,11 +62,11 @@ const Home: NextPage = () => {
   } = useWallet();
   function onWalletDisconnect() {
     disconnect();
-    setClaimButtonText(LABEL_CLAIM_PLOTS);
+    setNumberOfMintedNfts(0);
   }
   const tree = new MerkleTree(
     Object.entries(addresses).map(([address, allowance]) =>
-      hashToken(address, Number(allowance))
+      hashToken(address, allowance)
     ),
     keccak256,
     { sortPairs: true }
@@ -72,24 +76,29 @@ const Home: NextPage = () => {
     setIsIframeLoaded(true);
   };
 
+  function navigateToHome() {
+    setCurrentView(VIEWS.INITIAL_VIEW);
+  }
+  function showMintedNfts() {
+    setCurrentView(VIEWS.MINTED_NFTS);
+  }
   async function claim() {
     const signer = provider.getSigner();
-    const parcel0Contract = new ethers.Contract(
-      PARCEL0_NFT_CONTRACT_ADDRESS,
-      require("./../data/contract.json").abi,
-      provider
+    const parcel0Contract = new ParcelNFT__factory().attach(
+      PARCEL0_NFT_CONTRACT_ADDRESS
     );
-    const allowance: number = Number(addresses[address as keyof Addresses]);
+    const allowance: number = Number(
+      addresses[address?.toLowerCase() as keyof Addresses]
+    );
     const proof = tree.getHexProof(hashToken(address!, allowance));
-
     const numberOfMinted = await parcel0Contract
       .connect(signer)
-      .addressToMinted(address)
+      .alreadyClaimed(address)
       .then((result: ethers.BigNumber) => result.toNumber());
     if (allowance > numberOfMinted) {
       parcel0Contract
         .connect(signer)
-        .allowlist(address, eligibleNftCount, allowance, proof)
+        .allowListMint(eligibleNftCount, allowance, proof)
         .then((res: any) => {
           console.log("response", res);
         });
@@ -110,35 +119,34 @@ const Home: NextPage = () => {
   const checkEligibility = async (address: string) => {
     try {
       const signer = provider.getSigner();
-      const parcel0Contract = new ethers.Contract(
-        PARCEL0_NFT_CONTRACT_ADDRESS,
-        require("./../data/contract.json").abi,
-        provider
+      const parcel0Contract = new ParcelNFT__factory().attach(
+        PARCEL0_NFT_CONTRACT_ADDRESS
       );
-      const allowance: number = Number(addresses[address as keyof Addresses]);
+      const allowance: number =
+        addresses[address.toLowerCase() as keyof Addresses];
 
       //const proof = tree.getHexProof(hashToken(address, allowance));
 
       parcel0Contract
         .connect(signer)
-        .addressToMinted(address)
+        .alreadyClaimed(address)
         .then((result: ethers.BigNumber) => {
           const numberOfMinted = result.toNumber();
           if (allowance > numberOfMinted) {
             setEligibleNftCount(1);
             alert("want to mint?");
           } else if (allowance === numberOfMinted) {
-            setClaimButtonText(`${numberOfMinted} Plots Claimed`);
+            setNumberOfMintedNfts(numberOfMinted);
           }
         });
     } catch (error) {
       console.log(error);
-      // TODO trkaplan handle internal and Wallet native errors.
+      // TODO trkaplan handle errors.
     }
   };
 
   const parcelProperties = getParcelProperties(
-    numberOfMintedNFTs,
+    numberOfMintedNFTsSoFar,
     MAX_NFT_TO_MINT
   );
   return (
@@ -182,16 +190,22 @@ const Home: NextPage = () => {
                 )}
               </div>
             </div>
-            <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
+            {currentView === VIEWS.INITIAL_VIEW ? (
+              <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
+            ) : (
+              <MintedNftsView name="sss" navigateToHome={navigateToHome} />
+            )}
           </div>
           <div className="content-right">
             {/* nftCount */}
             <button
               disabled={!address}
-              onClick={claim}
+              onClick={numberOfMintedNfts === 0 ? claim : showMintedNfts}
               className={address ? "border-button default-cursor" : ""}
             >
-              {claimButtonText}
+              {numberOfMintedNfts === 0
+                ? "Claim Plots"
+                : `${numberOfMintedNfts} Plots Claimed`}
             </button>
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>
