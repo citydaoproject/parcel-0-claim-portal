@@ -1,21 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
-import { useState, FC, useEffect } from "react";
-import { NextPage } from "next";
-import { ethers } from "ethers";
-import { Iframe } from "../components/Iframe";
-import { ParcelProperties } from "../containers/ParcelProperties";
-import useWallet from "../hooks/useWallet";
-import { ParcelNFT__factory } from "@citydao/parcel-contracts/dist/types/contracts/factories/ParcelNFT__factory";
+import { useState, FC, useEffect } from 'react';
+import { NextPage } from 'next';
+import { ethers } from 'ethers';
+import { Iframe } from '../components/Iframe';
+import { ParcelProperties } from '../containers/ParcelProperties';
+import useWallet from '../hooks/useWallet';
+import { ParcelNFT__factory } from '@citydao/parcel-contracts/dist/types/contracts/factories/ParcelNFT__factory';
 
-import { getParcelProperties } from "../parcel-properties";
-import keccak256 from "keccak256";
-import MerkleTree from "merkletreejs";
-import { addresses, Addresses } from "../data/whiteListedAddresses";
-import { shortenWalletAddress } from "../utils";
-import { MAX_NFT_TO_MINT } from "../contants";
-import { MintedNftsView } from "../components/MintedNftsView";
-const PARCEL0_NFT_CONTRACT_ADDRESS =
-  "0x209723a65844093Ad769d557a22742e0f661959d";
+import { getParcelProperties } from '../parcel-properties';
+import keccak256 from 'keccak256';
+import MerkleTree from 'merkletreejs';
+import { addresses, Addresses } from '../data/whiteListedAddresses';
+import { shortenWalletAddress } from '../utils';
+import { MAX_NFT_TO_MINT } from '../contants';
+import { MintedNftsView } from '../components/MintedNftsView';
+const PARCEL0_NFT_CONTRACT_ADDRESS = '0x209723a65844093Ad769d557a22742e0f661959d';
 const numberOfMintedNFTsSoFar = 1; // TODO trkaplan calculate this value
 interface ConnectButtonProps {
   enabled?: boolean;
@@ -24,30 +23,21 @@ interface ConnectButtonProps {
   text?: string;
 }
 enum VIEWS {
-  "INITIAL_VIEW",
-  "MINTED_NFTS",
+  'INITIAL_VIEW',
+  'MINTED_NFTS',
 }
 
-const ConnectButton: FC<ConnectButtonProps> = ({
-  enabled,
-  onClick,
-  address,
-}) => {
+const ConnectButton: FC<ConnectButtonProps> = ({ enabled, onClick, address }) => {
   // TODO trkaplan disable if wallet is not installed
   return (
     <button disabled={!enabled} onClick={onClick} className="text-button">
-      {address ? shortenWalletAddress(address) : "Connect"}
+      {address ? shortenWalletAddress(address) : 'Connect'}
     </button>
   );
 };
 // https://docs.ethers.io/v5/api/utils/hashing/#utils-solidityKeccak256
 function hashToken(address: keyof Addresses, allowance: number) {
-  return Buffer.from(
-    ethers.utils
-      .solidityKeccak256(["address", "uint256"], [address, allowance])
-      .slice(2),
-    "hex"
-  );
+  return Buffer.from(ethers.utils.solidityKeccak256(['address', 'uint256'], [address, allowance]).slice(2), 'hex');
 }
 const Home: NextPage = () => {
   const [numberOfMintedNfts, setNumberOfMintedNfts] = useState<number>(0);
@@ -67,11 +57,9 @@ const Home: NextPage = () => {
     setNumberOfMintedNfts(0);
   }
   const tree = new MerkleTree(
-    Object.entries(addresses).map(([address, allowance]) =>
-      hashToken(address, allowance)
-    ),
+    Object.entries(addresses).map(([address, allowance]) => hashToken(address, allowance)),
     keccak256,
-    { sortPairs: true }
+    { sortPairs: true },
   );
 
   const handleLoad = () => {
@@ -84,13 +72,10 @@ const Home: NextPage = () => {
   function showMintedNfts() {
     setCurrentView(VIEWS.MINTED_NFTS);
   }
-  function getClaimButtonText(
-    numberOfMintedNfts: number,
-    eligibleNftCount: number
-  ) {
-    let text = "";
+  function getClaimButtonText(numberOfMintedNfts: number, eligibleNftCount: number) {
+    let text = '';
     if (numberOfMintedNfts === 0 && eligibleNftCount === 0) {
-      text = "CLAIM PLOTS";
+      text = 'CLAIM PLOTS';
     } else if (numberOfMintedNfts > 0) {
       text = `${numberOfMintedNfts} PLOTS CLAIMED`;
     } else if (eligibleNftCount > 0) {
@@ -100,12 +85,8 @@ const Home: NextPage = () => {
   }
   async function claim() {
     const signer = provider.getSigner();
-    const parcel0Contract = new ParcelNFT__factory().attach(
-      PARCEL0_NFT_CONTRACT_ADDRESS
-    );
-    const allowance: number = Number(
-      addresses[address?.toLowerCase() as keyof Addresses]
-    );
+    const parcel0Contract = new ParcelNFT__factory().attach(PARCEL0_NFT_CONTRACT_ADDRESS);
+    const allowance: number = Number(addresses[address?.toLowerCase() as keyof Addresses]);
     const proof = tree.getHexProof(hashToken(address!, allowance));
     const numberOfMinted = await parcel0Contract
       .connect(signer)
@@ -116,10 +97,10 @@ const Home: NextPage = () => {
         .connect(signer)
         .allowListMint(eligibleNftCount, allowance, proof)
         .then((res: any) => {
-          console.log("response", res);
+          console.log('response', res);
         });
     } else {
-      console.log("Already claimed!");
+      console.log('Already claimed!');
     }
   }
 
@@ -128,6 +109,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (address) {
+      // noinspection JSIgnoredPromiseFromCall
       checkEligibility(address);
     }
   }, [address]);
@@ -135,11 +117,8 @@ const Home: NextPage = () => {
   const checkEligibility = async (address: string) => {
     try {
       const signer = provider.getSigner();
-      const parcel0Contract = new ParcelNFT__factory().attach(
-        PARCEL0_NFT_CONTRACT_ADDRESS
-      );
-      const allowance: number =
-        addresses[address.toLowerCase() as keyof Addresses];
+      const parcel0Contract = new ParcelNFT__factory().attach(PARCEL0_NFT_CONTRACT_ADDRESS);
+      const allowance: number = addresses[address.toLowerCase() as keyof Addresses];
 
       //const proof = tree.getHexProof(hashToken(address, allowance));
       // TODO trkaplan disable the claim button add loading indicator until eligibility check is complete
@@ -161,21 +140,14 @@ const Home: NextPage = () => {
     }
   };
 
-  const parcelProperties = getParcelProperties(
-    numberOfMintedNFTsSoFar,
-    MAX_NFT_TO_MINT
-  );
+  const parcelProperties = getParcelProperties(numberOfMintedNFTsSoFar, MAX_NFT_TO_MINT);
   return (
     <>
       <div className="page-header">
         <div className="header-content">
           <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
           <div className="connect-button-container">
-            <ConnectButton
-              onClick={connect}
-              address={address!}
-              enabled={true}
-            />
+            <ConnectButton onClick={connect} address={address!} enabled={true} />
           </div>
         </div>
       </div>
@@ -188,8 +160,7 @@ const Home: NextPage = () => {
                 <div className="address">70 HAIL BASIN RD, POWELL, WYOMING</div>
               </div>
               <div className="message-box">
-                Claim ends in{" "}
-                <span className="remaining-time">45 Days 00 Hours</span>{" "}
+                Claim ends in <span className="remaining-time">45 Days 00 Hours</span>{' '}
                 {/* TODO trkaplan use countdown component */}
                 <br />
                 {address && (
@@ -202,7 +173,7 @@ const Home: NextPage = () => {
                 )}
                 {!address && (
                   <span>
-                    To claim{" "}
+                    To claim{' '}
                     <a href="#" onClick={connect}>
                       connect your wallet
                     </a>
@@ -213,10 +184,7 @@ const Home: NextPage = () => {
             {currentView === VIEWS.INITIAL_VIEW ? (
               <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
             ) : (
-              <MintedNftsView
-                numberOfNfts={numberOfMintedNfts}
-                navigateToHome={navigateToHome}
-              />
+              <MintedNftsView numberOfNfts={numberOfMintedNfts} navigateToHome={navigateToHome} />
             )}
           </div>
           <div className="content-right">
@@ -224,9 +192,7 @@ const Home: NextPage = () => {
             <button
               disabled={!address}
               onClick={numberOfMintedNfts === 0 ? claim : showMintedNfts}
-              className={
-                numberOfMintedNfts > 0 ? "border-button default-cursor" : ""
-              }
+              className={numberOfMintedNfts > 0 ? 'border-button default-cursor' : ''}
             >
               {getClaimButtonText(numberOfMintedNfts, eligibleNftCount)}
             </button>
