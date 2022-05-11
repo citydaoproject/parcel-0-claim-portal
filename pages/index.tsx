@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useState, FC, useEffect } from "react";
 import { NextPage } from "next";
 import { ethers } from "ethers";
@@ -108,7 +109,7 @@ const Home: NextPage = () => {
     const proof = tree.getHexProof(hashToken(address!, allowance));
     const numberOfMinted = await parcel0Contract
       .connect(signer)
-      .alreadyClaimed(address)
+      .alreadyClaimed(address!)
       .then((result: ethers.BigNumber) => result.toNumber());
     if (allowance > numberOfMinted) {
       parcel0Contract
@@ -170,7 +171,11 @@ const Home: NextPage = () => {
         <div className="header-content">
           <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
           <div className="connect-button-container">
-            <ConnectButton onClick={connect} address={address} enabled={true} />
+            <ConnectButton
+              onClick={connect}
+              address={address!}
+              enabled={true}
+            />
           </div>
         </div>
       </div>
