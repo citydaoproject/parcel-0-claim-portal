@@ -3,7 +3,7 @@ import {
   ParcelProperty,
   ParcelPropertyProps,
 } from "../../components/ParcelProperty";
-import { AGGREEMENT_IPFS_URL } from "../../contants";
+import { AGREEMENT_IPFS_URL } from "../../contants";
 export const ParcelProperties: FC<{
   parcelProperties: ParcelPropertyProps[];
 }> = ({ parcelProperties }) => (
@@ -18,7 +18,7 @@ export const ParcelProperties: FC<{
       />
     ))}
     <a
-      href={AGGREEMENT_IPFS_URL}
+      href={AGREEMENT_IPFS_URL}
       target="_blank"
       className="link-external"
       rel="noreferrer"
