@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useState, FC, useEffect } from "react";
 import { NextPage } from "next";
 import { ethers } from "ethers";
@@ -50,7 +51,7 @@ function hashToken(address: keyof Addresses, allowance: number) {
 }
 const Home: NextPage = () => {
   const [numberOfMintedNfts, setNumberOfMintedNfts] = useState<number>(0);
-  const [eligibleNftCount, setEligibleNftCount] = useState<number>(1);
+  const [eligibleNftCount, setEligibleNftCount] = useState<number>(0);
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
   const {
@@ -62,6 +63,7 @@ const Home: NextPage = () => {
   } = useWallet();
   function onWalletDisconnect() {
     disconnect();
+    setEligibleNftCount(0);
     setNumberOfMintedNfts(0);
   }
   const tree = new MerkleTree(
@@ -82,6 +84,20 @@ const Home: NextPage = () => {
   function showMintedNfts() {
     setCurrentView(VIEWS.MINTED_NFTS);
   }
+  function getClaimButtonText(
+    numberOfMintedNfts: number,
+    eligibleNftCount: number
+  ) {
+    let text = "";
+    if (numberOfMintedNfts === 0 && eligibleNftCount === 0) {
+      text = "CLAIM PLOTS";
+    } else if (numberOfMintedNfts > 0) {
+      text = `${numberOfMintedNfts} PLOTS CLAIMED`;
+    } else if (eligibleNftCount > 0) {
+      text = `CLAIM ${eligibleNftCount} PLOTS`;
+    }
+    return text;
+  }
   async function claim() {
     const signer = provider.getSigner();
     const parcel0Contract = new ParcelNFT__factory().attach(
@@ -93,7 +109,7 @@ const Home: NextPage = () => {
     const proof = tree.getHexProof(hashToken(address!, allowance));
     const numberOfMinted = await parcel0Contract
       .connect(signer)
-      .alreadyClaimed(address)
+      .alreadyClaimed(address!)
       .then((result: ethers.BigNumber) => result.toNumber());
     if (allowance > numberOfMinted) {
       parcel0Contract
@@ -126,7 +142,7 @@ const Home: NextPage = () => {
         addresses[address.toLowerCase() as keyof Addresses];
 
       //const proof = tree.getHexProof(hashToken(address, allowance));
-
+      // TODO trkaplan disable the claim button add loading indicator until eligibility check is complete
       parcel0Contract
         .connect(signer)
         .alreadyClaimed(address)
@@ -134,7 +150,7 @@ const Home: NextPage = () => {
           const numberOfMinted = result.toNumber();
           if (allowance > numberOfMinted) {
             setEligibleNftCount(1);
-            alert("want to mint?");
+            setNumberOfMintedNfts(0);
           } else if (allowance === numberOfMinted) {
             setNumberOfMintedNfts(numberOfMinted);
           }
@@ -155,7 +171,11 @@ const Home: NextPage = () => {
         <div className="header-content">
           <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
           <div className="connect-button-container">
-            <ConnectButton onClick={connect} address={address} enabled={true} />
+            <ConnectButton
+              onClick={connect}
+              address={address!}
+              enabled={true}
+            />
           </div>
         </div>
       </div>
@@ -193,7 +213,10 @@ const Home: NextPage = () => {
             {currentView === VIEWS.INITIAL_VIEW ? (
               <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
             ) : (
-              <MintedNftsView name="sss" navigateToHome={navigateToHome} />
+              <MintedNftsView
+                numberOfNfts={numberOfMintedNfts}
+                navigateToHome={navigateToHome}
+              />
             )}
           </div>
           <div className="content-right">
@@ -201,11 +224,11 @@ const Home: NextPage = () => {
             <button
               disabled={!address}
               onClick={numberOfMintedNfts === 0 ? claim : showMintedNfts}
-              className={address ? "border-button default-cursor" : ""}
+              className={
+                numberOfMintedNfts > 0 ? "border-button default-cursor" : ""
+              }
             >
-              {numberOfMintedNfts === 0
-                ? "Claim Plots"
-                : `${numberOfMintedNfts} Plots Claimed`}
+              {getClaimButtonText(numberOfMintedNfts, eligibleNftCount)}
             </button>
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>
