@@ -12,7 +12,7 @@ type TooltipProps = {
   content: string;
 };
 export const Tooltip = ({
-  delay = 400,
+  delay = 200,
   children,
   direction,
   content,
@@ -23,7 +23,7 @@ export const Tooltip = ({
   const showTip = () => {
     timeout = setTimeout(() => {
       setActive(true);
-    }, delay || 400);
+    }, delay);
   };
 
   const hideTip = () => {
@@ -41,7 +41,7 @@ export const Tooltip = ({
 
 Tooltip.propTypes = {
   delay: PropTypes.string,
-  children: PropTypes.object.isRequired,
+  children: PropTypes.array.isRequired,
   direction: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
 };
