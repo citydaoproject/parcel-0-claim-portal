@@ -101,7 +101,9 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     let text = '';
-    if (!isEligible) {
+    if (!address) {
+      text = 'CLAIM NFTS';
+    } else if (address && !isEligible) {
       text = 'NOT ELIGIBLE';
     } else if (numberOfMintedNfts > 0) {
       text = `${numberOfMintedNfts} PLOTS CLAIMED`;
@@ -109,7 +111,7 @@ const Home: NextPage = () => {
       text = `CLAIM ${eligibleNftCount} PLOTS`; // TODO trkaplan replace PLOTS w/ NFTS
     }
     setClaimButtonText(text);
-  }, [numberOfMintedNfts, eligibleNftCount, isEligible]);
+  }, [numberOfMintedNfts, eligibleNftCount, isEligible, address]);
 
   const checkEligibility = async (address: string) => {
     try {
@@ -133,7 +135,7 @@ const Home: NextPage = () => {
             }
           });
         setIsEligible(true);
-      } else {
+      } else if (!allowance && address) {
         setIsEligible(false);
         handleOpenNotEligibleModal();
       }
@@ -185,7 +187,7 @@ const Home: NextPage = () => {
               </div>
             </div>
             {currentView === VIEWS.INITIAL_VIEW ? (
-              <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
+              <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" style={{ width: '761px' }} />
             ) : (
               <MintedNftsView numberOfNfts={numberOfMintedNfts} navigateToHome={navigateToHome} />
             )}

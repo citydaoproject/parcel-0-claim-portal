@@ -176,9 +176,6 @@ button {
   transition: background .1s ease-in;
   border: 2px solid transparent;
 }
-button:hover {
-  background: var(--color-hover);
-}
 button:disabled {
   background: var(--color-disabled);
   color: var(--color-disabled-text);
