@@ -11,9 +11,12 @@ export const ParcelProperty: FC<ParcelPropertyProps> = ({ name, value, tooltip, 
   <div className="property">
     <div className="leftSide">
       <div className="propName">
-        <Tooltip content={tooltip} direction="top">
-          {name} <img src="/icons/info.png" alt="" />
-        </Tooltip>
+        {tooltip && (
+          <Tooltip content={tooltip} direction="top">
+            {name} <img src="/icons/info.png" alt="" />
+          </Tooltip>
+        )}{' '}
+        {!tooltip && name}
       </div>
       <div className="propVal">{value}</div>
     </div>
