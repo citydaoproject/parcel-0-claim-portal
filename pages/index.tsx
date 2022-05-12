@@ -20,17 +20,20 @@ const PARCEL0_NFT_CONTRACT_ADDRESS = '0x209723a65844093Ad769d557a22742e0f661959d
 const numberOfMintedNFTsSoFar = 1; // TODO trkaplan calculate this value
 import { useModal } from '../hooks/useModal';
 import { Button } from '../components/Button';
+import { NotEligibleModal } from '../components/NotEligibleModal';
 
 // https://docs.ethers.io/v5/api/utils/hashing/#utils-solidityKeccak256
 function hashToken(address: keyof Addresses, allowance: number) {
   return Buffer.from(ethers.utils.solidityKeccak256(['address', 'uint256'], [address, allowance]).slice(2), 'hex');
 }
 const Home: NextPage = () => {
-  const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal } = useModal();
+  const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal, handleOpenNotEligibleModal } =
+    useModal();
   const [numberOfMintedNfts, setNumberOfMintedNfts] = useState<number>(0);
   const [eligibleNftCount, setEligibleNftCount] = useState<number>(0);
   const [claimButtonText, setClaimButtonText] = useState<string>('sss');
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
+  const [isEligible, setIsEligible] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
   const {
     account: address,
@@ -98,37 +101,42 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     let text = '';
-    if (numberOfMintedNfts === 0 && eligibleNftCount === 0) {
-      text = 'CLAIM PLOTS'; // TODO trkaplan replace PLOTS w/ NFTS
+    if (!isEligible) {
+      text = 'NOT ELIGIBLE';
     } else if (numberOfMintedNfts > 0) {
       text = `${numberOfMintedNfts} PLOTS CLAIMED`;
     } else if (eligibleNftCount > 0) {
-      text = `CLAIM ${eligibleNftCount} PLOTS`;
+      text = `CLAIM ${eligibleNftCount} PLOTS`; // TODO trkaplan replace PLOTS w/ NFTS
     }
     setClaimButtonText(text);
-  }, [numberOfMintedNfts, eligibleNftCount]);
+  }, [numberOfMintedNfts, eligibleNftCount, isEligible]);
 
   const checkEligibility = async (address: string) => {
     try {
       const signer = provider.getSigner();
       const parcel0Contract = new ParcelNFT__factory().attach(PARCEL0_NFT_CONTRACT_ADDRESS);
       const allowance: number = addresses[address.toLowerCase() as keyof Addresses];
-
-      //const proof = tree.getHexProof(hashToken(address, allowance));
-      // TODO trkaplan disable the claim button add loading indicator until eligibility check is complete
-      parcel0Contract
-        .connect(signer)
-        .alreadyClaimed(address)
-        .then((result: ethers.BigNumber) => {
-          const numberOfMinted = result.toNumber();
-          if (allowance > numberOfMinted) {
-            setEligibleNftCount(allowance);
-            setNumberOfMintedNfts(0);
-            setCurrentView(VIEWS.INITIAL_VIEW); // in case user in on the minted nfts view and changes the wallet.
-          } else if (allowance === numberOfMinted) {
-            setNumberOfMintedNfts(numberOfMinted);
-          }
-        });
+      if (allowance) {
+        //const proof = tree.getHexProof(hashToken(address, allowance));
+        // TODO trkaplan disable the claim button add loading indicator until eligibility check is complete
+        parcel0Contract
+          .connect(signer)
+          .alreadyClaimed(address)
+          .then((result: ethers.BigNumber) => {
+            const numberOfMinted = result.toNumber();
+            if (allowance > numberOfMinted) {
+              setEligibleNftCount(allowance);
+              setNumberOfMintedNfts(0);
+              setCurrentView(VIEWS.INITIAL_VIEW); // in case user in on the minted nfts view and changes the wallet.
+            } else if (allowance === numberOfMinted) {
+              setNumberOfMintedNfts(numberOfMinted);
+            }
+          });
+        setIsEligible(true);
+      } else {
+        setIsEligible(false);
+        handleOpenNotEligibleModal();
+      }
     } catch (error) {
       console.log(error);
       // TODO trkaplan handle errors.
@@ -188,7 +196,13 @@ const Home: NextPage = () => {
             }
             <Button
               isEnabled={Boolean(address)}
-              onClick={numberOfMintedNfts === 0 ? handleOpenClaimModal : showMintedNfts}
+              onClick={
+                numberOfMintedNfts === 0
+                  ? isEligible
+                    ? handleOpenClaimModal
+                    : handleOpenNotEligibleModal
+                  : showMintedNfts
+              }
               label={claimButtonText}
               isBordered={numberOfMintedNfts > 0}
             />
@@ -197,6 +211,7 @@ const Home: NextPage = () => {
         </div>
         <ClaimModal onClaim={claim} eligibleNftsCount={eligibleNftCount} />
         <ClaimSuccessModal eligibleNftsCount={eligibleNftCount} />
+        <NotEligibleModal />
       </main>
     </>
   );
