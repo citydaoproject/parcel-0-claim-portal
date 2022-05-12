@@ -315,10 +315,14 @@ button.border-button {
 .claim-popup .parcel-0-logo-md {
   width: 87px;
 }
-.parcel-art {
-  max-width: 338px;
+.parcel-art-container {
   margin-top: 36px;
   margin-bottom: 24px;
+}
+.parcel-art {
+  width: 338px;
+  height: 338px;
+  display: inline-block;
 }
 .terms{
   margin-bottom: 24px;
