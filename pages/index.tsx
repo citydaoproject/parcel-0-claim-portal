@@ -19,6 +19,7 @@ import { MintedNftsView } from '../components/MintedNftsView';
 const PARCEL0_NFT_CONTRACT_ADDRESS = '0x209723a65844093Ad769d557a22742e0f661959d';
 const numberOfMintedNFTsSoFar = 1; // TODO trkaplan calculate this value
 import { useModal } from '../hooks/useModal';
+import { Button } from '../components/Button';
 
 // https://docs.ethers.io/v5/api/utils/hashing/#utils-solidityKeccak256
 function hashToken(address: keyof Addresses, allowance: number) {
@@ -28,6 +29,7 @@ const Home: NextPage = () => {
   const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal } = useModal();
   const [numberOfMintedNfts, setNumberOfMintedNfts] = useState<number>(0);
   const [eligibleNftCount, setEligibleNftCount] = useState<number>(0);
+  const [claimButtonText, setClaimButtonText] = useState<string>('sss');
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
   const {
@@ -59,17 +61,7 @@ const Home: NextPage = () => {
   function showMintedNfts() {
     setCurrentView(VIEWS.MINTED_NFTS);
   }
-  function getClaimButtonText(numberOfMintedNfts: number, eligibleNftCount: number) {
-    let text = '';
-    if (numberOfMintedNfts === 0 && eligibleNftCount === 0) {
-      text = 'CLAIM PLOTS';
-    } else if (numberOfMintedNfts > 0) {
-      text = `${numberOfMintedNfts} PLOTS CLAIMED`;
-    } else if (eligibleNftCount > 0) {
-      text = `CLAIM ${eligibleNftCount} PLOTS`;
-    }
-    return text;
-  }
+
   async function claim() {
     const signer = provider.getSigner();
     const parcel0Contract = new ParcelNFT__factory().attach(PARCEL0_NFT_CONTRACT_ADDRESS);
@@ -85,8 +77,10 @@ const Home: NextPage = () => {
         .allowListMint(eligibleNftCount, allowance, proof)
         .then((res: any) => {
           console.log('response', res);
+          setEligibleNftCount(allowance);
           handleCloseClaimModal();
           handleOpenClaimSuccessModal();
+          setCurrentView(VIEWS.MINTED_NFTS);
         });
     } else {
       console.log('Already claimed!');
@@ -94,7 +88,6 @@ const Home: NextPage = () => {
   }
 
   //TODO trkaplan check what happens when you visit with a browser that does not have metamask
-  //setNftCount(count);
 
   useEffect(() => {
     if (address) {
@@ -102,6 +95,18 @@ const Home: NextPage = () => {
       checkEligibility(address);
     }
   }, [address]);
+
+  useEffect(() => {
+    let text = '';
+    if (numberOfMintedNfts === 0 && eligibleNftCount === 0) {
+      text = 'CLAIM PLOTS'; // TODO trkaplan replace PLOTS w/ NFTS
+    } else if (numberOfMintedNfts > 0) {
+      text = `${numberOfMintedNfts} PLOTS CLAIMED`;
+    } else if (eligibleNftCount > 0) {
+      text = `CLAIM ${eligibleNftCount} PLOTS`;
+    }
+    setClaimButtonText(text);
+  }, [numberOfMintedNfts, eligibleNftCount]);
 
   const checkEligibility = async (address: string) => {
     try {
@@ -178,18 +183,19 @@ const Home: NextPage = () => {
             )}
           </div>
           <div className="content-right">
-            {/* nftCount */}
-            <button
-              disabled={!address}
+            {
+              // TODO trkaplan disable if wallet is not installed
+            }
+            <Button
+              isEnabled={Boolean(address)}
               onClick={numberOfMintedNfts === 0 ? handleOpenClaimModal : showMintedNfts}
-              className={numberOfMintedNfts > 0 ? 'border-button default-cursor' : ''}
-            >
-              {getClaimButtonText(numberOfMintedNfts, eligibleNftCount)}
-            </button>
+              label={claimButtonText}
+              isBordered={numberOfMintedNfts > 0}
+            />
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>
         </div>
-        <ClaimModal onButtonClick={claim} eligibleNftsCount={eligibleNftCount} />
+        <ClaimModal onClaim={claim} eligibleNftsCount={eligibleNftCount} />
         <ClaimSuccessModal eligibleNftsCount={eligibleNftCount} />
       </main>
     </>
