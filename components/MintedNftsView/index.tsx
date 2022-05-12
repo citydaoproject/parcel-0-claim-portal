@@ -1,1 +1,1 @@
-export * from "./MintedNftsView";
+export * from './MintedNftsView';

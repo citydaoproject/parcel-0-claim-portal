@@ -176,9 +176,6 @@ button {
   transition: background .1s ease-in;
   border: 2px solid transparent;
 }
-button:hover {
-  background: var(--color-hover);
-}
 button:disabled {
   background: var(--color-disabled);
   color: var(--color-disabled-text);
@@ -315,10 +312,14 @@ button.border-button {
 .claim-popup .parcel-0-logo-md {
   width: 87px;
 }
-.parcel-art {
-  max-width: 338px;
+.parcel-art-container {
   margin-top: 36px;
   margin-bottom: 24px;
+}
+.parcel-art {
+  width: 338px;
+  height: 338px;
+  display: inline-block;
 }
 .terms{
   margin-bottom: 24px;
@@ -371,7 +372,16 @@ button.border-button {
   position: relative;
   max-width: 482px;
   width: 100%;
-  padding-top: 24px;
+  padding-top: 16px;
   background: #04110C;
-  border: 1px solid #00FFA8;
+  border: 1px solid var(--color-primary);
+}
+
+.note {
+  border: 1px solid var(--color-primary);
+  background: rgba(0, 255, 168, 0.1);
+  padding: 18px;
+  line-height: 20px;
+  width: 365px;
+  margin: 42px auto 0;
 }
