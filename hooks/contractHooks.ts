@@ -117,7 +117,7 @@ export const attachContract = <F extends ContractFactory, C extends FactoryContr
   address: string,
   provider: JsonRpcProvider | null,
 ): C | null => {
-  if (address === '' || address === ZERO_ADDRESS) {
+  if (!address || address === ZERO_ADDRESS) {
     return null;
   }
 
@@ -140,7 +140,7 @@ export const attachInterface = <C extends Contract>(
   address: string,
   provider: JsonRpcProvider | null,
 ): C | null => {
-  if (address === '' || address === ZERO_ADDRESS) {
+  if (!address || address === ZERO_ADDRESS) {
     return null;
   }
 
