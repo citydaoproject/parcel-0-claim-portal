@@ -1,4 +1,6 @@
-export const getParcelProperties = (numberOfMinted: number, numberOfMaxNftToMint: number) => [
+import { ParcelPropertyProps } from './components/ParcelProperty';
+
+export const getParcelProperties = (numberOfMinted: number, numberOfMaxNftToMint: number): ParcelPropertyProps[] => [
   {
     name: 'TOTAL PLOTS',
     value: `${numberOfMinted}/${numberOfMaxNftToMint}`,

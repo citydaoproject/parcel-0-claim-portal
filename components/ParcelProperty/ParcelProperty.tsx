@@ -3,7 +3,7 @@ import { FC } from 'react';
 export type ParcelPropertyProps = {
   name: string;
   value: string;
-  tooltip: string;
+  tooltip?: string;
   iconPath: string;
 };
 export const ParcelProperty: FC<ParcelPropertyProps> = ({ name, value, tooltip, iconPath }) => (

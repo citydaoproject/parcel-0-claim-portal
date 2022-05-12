@@ -1,10 +1,13 @@
-import { reducer, Actions } from "../reducer/";
-import React, { createContext, ReactNode, useContext, useReducer } from "react";
+import { Provider } from '@ethersproject/abstract-provider';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import React, { createContext, ReactNode, useContext, useReducer } from 'react';
+import { Actions, reducer } from '../reducer/';
+
 export type InitialStateType = {
-  provider?: any;
-  web3Provider?: any;
-  account?: string | null;
-  chainId?: number | null;
+  provider: Provider | null;
+  web3Provider: JsonRpcProvider | null;
+  account: string | null;
+  chainId: number | null;
 };
 
 const initialState: InitialStateType = {
@@ -27,11 +30,7 @@ type AppProviderProps = {
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  return (
-    <AppContext.Provider value={{ state, dispatch }}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={{ state, dispatch }}>{children}</AppContext.Provider>;
 };
 
 export const useAppContext = () => useContext(AppContext);
