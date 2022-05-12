@@ -4,6 +4,7 @@ import { NextPage } from 'next';
 import { ethers } from 'ethers';
 import { Iframe } from '../components/Iframe';
 import { ClaimModal } from '../components/ClaimModal';
+import { ConnectButton } from '../components/ConnectButton';
 import { ClaimSuccessModal } from '../components/ClaimSuccessModal';
 import { ParcelProperties } from '../containers/ParcelProperties';
 import useWallet from '../hooks/useWallet';
@@ -13,31 +14,12 @@ import keccak256 from 'keccak256';
 import MerkleTree from 'merkletreejs';
 import { addresses, Addresses } from '../data/whiteListedAddresses';
 import { shortenWalletAddress } from '../utils';
-import { MAX_NFT_TO_MINT } from '../contants';
+import { MAX_NFT_TO_MINT, VIEWS } from '../contants';
 import { MintedNftsView } from '../components/MintedNftsView';
 const PARCEL0_NFT_CONTRACT_ADDRESS = '0x209723a65844093Ad769d557a22742e0f661959d';
 const numberOfMintedNFTsSoFar = 1; // TODO trkaplan calculate this value
 import { useModal } from '../hooks/useModal';
 
-interface ConnectButtonProps {
-  enabled?: boolean;
-  onClick?(): void;
-  address?: string;
-  text?: string;
-}
-enum VIEWS {
-  'INITIAL_VIEW',
-  'MINTED_NFTS',
-}
-
-const ConnectButton: FC<ConnectButtonProps> = ({ enabled, onClick, address }) => {
-  // TODO trkaplan disable if wallet is not installed
-  return (
-    <button disabled={!enabled} onClick={onClick} className="text-button">
-      {address ? shortenWalletAddress(address) : 'Connect'}
-    </button>
-  );
-};
 // https://docs.ethers.io/v5/api/utils/hashing/#utils-solidityKeccak256
 function hashToken(address: keyof Addresses, allowance: number) {
   return Buffer.from(ethers.utils.solidityKeccak256(['address', 'uint256'], [address, allowance]).slice(2), 'hex');
