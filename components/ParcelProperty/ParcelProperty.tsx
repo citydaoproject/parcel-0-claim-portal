@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { Tooltip } from '../Tooltip';
 
 export type ParcelPropertyProps = {
   name: string;
@@ -12,9 +11,9 @@ export const ParcelProperty: FC<ParcelPropertyProps> = ({ name, value, tooltip, 
     <div className="leftSide">
       <div className="propName">
         {tooltip && (
-          <Tooltip content={tooltip} direction="top">
+          <div data-multiline={true} data-tip={tooltip}>
             {name} <img src="/icons/info.png" alt="" />
-          </Tooltip>
+          </div>
         )}{' '}
         {!tooltip && name}
       </div>

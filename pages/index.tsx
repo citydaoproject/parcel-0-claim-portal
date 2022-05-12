@@ -2,6 +2,7 @@
 import { useState, FC, useEffect } from 'react';
 import { NextPage } from 'next';
 import { ethers } from 'ethers';
+import ReactTooltip from 'react-tooltip';
 import { Iframe } from '../components/Iframe';
 import { ClaimModal } from '../components/ClaimModal';
 import { ConnectButton } from '../components/ConnectButton';
@@ -214,6 +215,7 @@ const Home: NextPage = () => {
         <ClaimModal onClaim={claim} eligibleNftsCount={eligibleNftCount} />
         <ClaimSuccessModal eligibleNftsCount={eligibleNftCount} />
         <NotEligibleModal />
+        <ReactTooltip />
       </main>
     </>
   );

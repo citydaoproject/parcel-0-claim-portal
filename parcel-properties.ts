@@ -19,20 +19,20 @@ export const getParcelProperties = (numberOfMinted: number, numberOfMaxNftToMint
     name: 'PARCEL PURPOSE',
     value: 'CONSERVATION',
     tooltip:
-      'Parcel 0 is currently planned for conservation. CityDAO’ may open up more possibilities for Parcel 0, for example, building a structure or a monument.',
+      'Parcel 0 is currently planned for conservation. CityDAO’ may <br/>open up more possibilities for Parcel 0, for example, building a <br/>structure or a monument.',
     iconPath: '/icons/icon_tree.png',
   },
   {
     name: 'NFT UTILITY',
     value: 'GOVERNANCE',
-    tooltip: 'Parcel 0 NFT holders will get to vote and execute on Parcel 0 Improvement Projects.',
+    tooltip: 'Parcel 0 NFT holders will get to vote and execute on <br/>Parcel 0 Improvement Projects.',
     iconPath: '/icons/icon_g.png',
   },
   {
     name: 'PARCEL ACCESS',
     value: 'PERMITTED',
     tooltip:
-      'Parcel 0 NFT holders can visit Parcel 0. CityDAO or Parcel 0 holders may define reasonable policies to manage visitation.',
+      'Parcel 0 NFT holders can visit Parcel 0. CityDAO or Parcel 0 <br/>holders may define reasonable policies to manage visitation.',
     iconPath: '/icons/icon_check.png',
   },
 ];
