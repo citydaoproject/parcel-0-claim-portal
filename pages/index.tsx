@@ -32,7 +32,7 @@ const Home: NextPage = () => {
     useModal();
   const [numberOfMintedNfts, setNumberOfMintedNfts] = useState<number>(0);
   const [eligibleNftCount, setEligibleNftCount] = useState<number>(0);
-  const [claimButtonText, setClaimButtonText] = useState<string>('sss');
+  const [claimButtonText, setClaimButtonText] = useState<string>('CLAIM NFTS');
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
   const [isEligible, setIsEligible] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
@@ -188,7 +188,9 @@ const Home: NextPage = () => {
               </div>
             </div>
             {currentView === VIEWS.INITIAL_VIEW ? (
-              <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" style={{ width: '761px' }} />
+              <div className="nft-art-home-wrapper">
+                <img className="nft-art-home" src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
+              </div>
             ) : (
               <MintedNftsView numberOfNfts={numberOfMintedNfts} navigateToHome={navigateToHome} />
             )}

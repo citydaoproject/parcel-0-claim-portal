@@ -5,7 +5,7 @@ interface MintedNftsViewProps {
   numberOfNfts: number;
 }
 export const MintedNftsView: FC<MintedNftsViewProps> = ({ navigateToHome, numberOfNfts }) => (
-  <div>
+  <div className="view-nfts">
     <a href="#" onClick={navigateToHome}>
       Go Back
     </a>
