@@ -2,7 +2,7 @@
 import { Provider } from '@ethersproject/abstract-provider';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import { ethers, providers } from 'ethers';
+import { providers } from 'ethers';
 import { useCallback, useEffect } from 'react';
 import Web3Modal from 'web3modal';
 import { useAppContext } from '../context/StateProvider';
@@ -18,6 +18,7 @@ const providerOptions = {
     },
   },
 };
+
 let web3Modal: any;
 if (typeof window !== 'undefined') {
   web3Modal = new Web3Modal({
@@ -80,26 +81,8 @@ const useWallet = (): WalletHook => {
     if (web3Modal.cachedProvider) {
       // noinspection JSIgnoredPromiseFromCall
       connect();
-    } else {
-      const rpcProvider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/' + INFURA_ID);
-      dispatch({
-        type: ActionTypes.initialWeb3Provider,
-        payload: {
-          web3Provider: rpcProvider,
-        },
-      });
     }
   }, []);
-  // useEffect(() => {
-  //   if (provider) {
-  //     if (state.chainId !== Number("0x13881")) {
-  //       provider?.request({
-  //         method: "wallet_switchEthereumChain",
-  //         params: [{ chainId: "0x13881" }],
-  //       });
-  //     }
-  //   }
-  // }, [state, provider]);
 
   useEffect(() => {
     if (provider?.on) {
