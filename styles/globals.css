@@ -8,6 +8,7 @@
   --color-hover: #d7e5e0;
   --color-disabled: #a7a7a7;
   --color-disabled-text: gray;
+  --color-warning: #ff9900;
   --width-max:1444px;
 }
 
@@ -45,6 +46,11 @@ main {
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
+}
+.network-warning-container {
+  color: var(--color-warning);
+  align-items: center;
+  display: flex;
 }
 .connect-button-container {
   border-left: 1px solid var(--color-primary);
@@ -360,11 +366,11 @@ button.border-button {
   bottom: 0;
   right: 0;
   left: 0;
-  
+
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   background: rgba(0,0,0,0.5);
 }
 

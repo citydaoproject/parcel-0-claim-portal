@@ -32,7 +32,7 @@ const Home: NextPage = () => {
     account: address,
     connect,
     disconnect,
-    chainId, // TODO trkaplan warn users connected to different chain for better UX
+    chainId,
   } = useWallet();
 
   const { parcelNFTDetails, refetch } = useParcelNFT(PARCEL0_NFT_CONTRACT_ADDRESSES[chainId ?? 0]);
@@ -110,6 +110,9 @@ const Home: NextPage = () => {
       <div className="page-header">
         <div className="header-content">
           <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
+          {chainId && chainId !== 1 ? (
+            <div className="network-warning-container">Warning: Not on Main Ethereum Network</div>
+          ) : null}
           <div className="connect-button-container">
             <ConnectButton onClick={connect} address={address || undefined} enabled={true} />
           </div>
