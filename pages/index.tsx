@@ -156,7 +156,9 @@ const Home: NextPage = () => {
               walletAlreadyClaimed={walletAlreadyClaimed}
               allowance={allowance}
               disabled={!address}
-              onClick={walletAlreadyClaimed === 0 ? handleOpenClaimModal : showMintedNfts}
+              onClick={
+                walletAlreadyClaimed === 0 || walletAlreadyClaimed < allowance ? handleOpenClaimModal : showMintedNfts
+              }
             />
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>

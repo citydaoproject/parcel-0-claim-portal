@@ -8,18 +8,19 @@ export interface ClaimButtonProps extends DefaultButtonProps {
 
 const ClaimButton = ({ allowance, walletAlreadyClaimed, disabled, ...rest }: ClaimButtonProps) => {
   const getClaimButtonText = () => {
-    if (walletAlreadyClaimed === 0 && allowance === 0) {
-      return 'CLAIM PLOTS';
-    } else if (walletAlreadyClaimed > 0) {
-      return `${walletAlreadyClaimed} PLOTS CLAIMED`;
-    } else if (allowance > 0) {
-      return `CLAIM ${allowance} PLOTS`;
+    if (allowance > 0 && allowance > walletAlreadyClaimed) {
+      return `CLAIM ${allowance - walletAlreadyClaimed} PLOTS`;
     }
-    return '';
+
+    if (walletAlreadyClaimed > 0) {
+      return `${walletAlreadyClaimed} PLOTS CLAIMED`;
+    }
+
+    return 'CLAIM PLOTS';
   };
 
   return (
-    <DefaultButton {...rest} disabled={disabled || allowance === 0}>
+    <DefaultButton {...rest} disabled={disabled || (walletAlreadyClaimed === 0 && allowance === 0)}>
       {getClaimButtonText()}
     </DefaultButton>
   );
