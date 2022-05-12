@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+// TODO trkaplan disable no-img-element in eslint config
 import { FC, useState } from 'react';
 import Modal from 'react-modal';
 
@@ -7,7 +9,6 @@ import { AGREEMENT_IPFS_URL } from '../../contants';
 type ClaimModalProps = {
   eligibleNftsCount: number;
   onClaim: () => void;
-  onClose: () => void;
 };
 export const ClaimModal: FC<ClaimModalProps> = ({ eligibleNftsCount, onClaim }) => {
   const { isClaimModalOpen, handleCloseClaimModal } = useModal();
@@ -40,7 +41,7 @@ export const ClaimModal: FC<ClaimModalProps> = ({ eligibleNftsCount, onClaim }) 
           />
           <label htmlFor="cb1">
             Accept Parcel 0{' '}
-            <a target="_blank" href={AGREEMENT_IPFS_URL} className="text-primary">
+            <a target="_blank" href={AGREEMENT_IPFS_URL} className="text-primary" rel="noreferrer">
               Terms & Conditions
             </a>
           </label>

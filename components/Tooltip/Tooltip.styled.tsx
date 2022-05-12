@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 
 export const Wrapper = styled.div`
   display: inline-block;
@@ -46,7 +46,7 @@ const TooltipModifiers = {
   `,
 };
 interface TooltipProps {
-  direction: "top" | "right" | "bottom" | "left";
+  direction: 'top' | 'right' | 'bottom' | 'left';
 }
 export const Tooltip = styled.div<TooltipProps>`
   ${({ direction }) => css`
@@ -63,7 +63,7 @@ export const Tooltip = styled.div<TooltipProps>`
     z-index: 100;
     white-space: nowrap;
     &:before {
-      content: " ";
+      content: ' ';
       left: 50%;
       border: solid transparent;
       height: 0;

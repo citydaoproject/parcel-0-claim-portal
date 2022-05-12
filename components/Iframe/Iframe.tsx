@@ -1,5 +1,5 @@
-import React, { ComponentType } from "react";
-import { IIframe } from "./types";
+import React, { ComponentType } from 'react';
+import { IIframe } from './types';
 
 export const Iframe: ComponentType<IIframe> = ({
   url,
@@ -36,7 +36,7 @@ export const Iframe: ComponentType<IIframe> = ({
     target: target || null,
     style: {
       position: position || null,
-      display: display || "block",
+      display: display || 'block',
       overflow: overflow || null,
     },
     scrolling: scrolling || null,
@@ -52,9 +52,9 @@ export const Iframe: ComponentType<IIframe> = ({
     allow: allow || null,
     id: id || null,
     frameBorder,
-    "aria-labelledby": ariaLabelledby || null,
-    "aria-hidden": ariaHidden || null,
-    "aria-label": ariaLabel || null,
+    'aria-labelledby': ariaLabelledby || null,
+    'aria-hidden': ariaHidden || null,
+    'aria-label': ariaLabel || null,
     width: width || null,
     height: height || null,
     onLoad: onLoad || null,
@@ -75,11 +75,11 @@ export const Iframe: ComponentType<IIframe> = ({
   }
 
   if (allowFullScreen) {
-    if ("allow" in props) {
-      const currentAllow = props.allow.replace("fullscreen", "");
+    if ('allow' in props) {
+      const currentAllow = props.allow.replace('fullscreen', '');
       props.allow = `fullscreen ${currentAllow.trim()}`.trim();
     } else {
-      props.allow = "fullscreen";
+      props.allow = 'fullscreen';
     }
   }
 

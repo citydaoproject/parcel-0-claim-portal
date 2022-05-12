@@ -20,7 +20,7 @@ export const NotEligibleModal: FC = () => {
           <div className="note">
             Parcel 0 plots can only be claimed by
             <br />
-            <a target="_blank" href="https://citydao.io/">
+            <a target="_blank" href="https://citydao.io/" rel="noreferrer">
               CityDAO Citizen
             </a>{' '}
             NFT holders

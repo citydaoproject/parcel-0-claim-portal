@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { Tooltip } from "../Tooltip";
+import { FC } from 'react';
+import { Tooltip } from '../Tooltip';
 
 export type ParcelPropertyProps = {
   name: string;
@@ -7,12 +7,7 @@ export type ParcelPropertyProps = {
   tooltip: string;
   iconPath: string;
 };
-export const ParcelProperty: FC<ParcelPropertyProps> = ({
-  name,
-  value,
-  tooltip,
-  iconPath,
-}) => (
+export const ParcelProperty: FC<ParcelPropertyProps> = ({ name, value, tooltip, iconPath }) => (
   <div className="property">
     <div className="leftSide">
       <div className="propName">
