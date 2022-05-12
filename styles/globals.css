@@ -4,6 +4,7 @@
   --color-secondary: #b8bbba;
   --color-dark-green: #3b865e;
   --color-bg: #04100b;
+  --color-bg2: #E5E5E5;
   --color-hover: #d7e5e0;
   --color-disabled: #a7a7a7;
   --color-disabled-text: gray;
@@ -307,4 +308,70 @@ button.border-button {
   margin-left: 16px;
   margin-right: 16px;
   margin-bottom: 16px;
+}
+.claim-popup {
+  text-align: center;
+}
+.claim-popup .parcel-0-logo-md {
+  width: 87px;
+}
+.parcel-art {
+  max-width: 338px;
+  margin-top: 36px;
+  margin-bottom: 24px;
+}
+.terms{
+  margin-bottom: 24px;
+  font-size: 16px;
+}
+#cb1{
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.btn-accept{
+  max-width: 338px;
+  margin-bottom: 36px;
+}
+.btn-close {
+  width: 134px;
+  margin-bottom: 53px;
+  margin-top: 55px;
+  background-color: var(--color-bg2);
+}
+.popup-title {
+  font-size: 24px;
+  color: var(--color-primary);
+  padding-bottom: 16px;
+}
+.popup-content {
+  letter-spacing: 0.3px;
+}
+.popup-content >p{
+  margin-top:7px;
+}
+.text-primary {
+  color: var(--color-primary);
+}
+
+.react-modal-overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background: rgba(0,0,0,0.5);
+}
+
+.react-modal-content {
+  position: relative;
+  max-width: 482px;
+  width: 100%;
+  padding-top: 24px;
+  background: #04110C;
+  border: 1px solid #00FFA8;
 }

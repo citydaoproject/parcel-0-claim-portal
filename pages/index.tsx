@@ -3,10 +3,11 @@ import { useState, FC, useEffect } from 'react';
 import { NextPage } from 'next';
 import { ethers } from 'ethers';
 import { Iframe } from '../components/Iframe';
+import { ClaimModal } from '../components/ClaimModal';
+import { ClaimSuccessModal } from '../components/ClaimSuccessModal';
 import { ParcelProperties } from '../containers/ParcelProperties';
 import useWallet from '../hooks/useWallet';
 import { ParcelNFT__factory } from '@citydao/parcel-contracts/dist/types/contracts/factories/ParcelNFT__factory';
-
 import { getParcelProperties } from '../parcel-properties';
 import keccak256 from 'keccak256';
 import MerkleTree from 'merkletreejs';
@@ -16,6 +17,8 @@ import { MAX_NFT_TO_MINT } from '../contants';
 import { MintedNftsView } from '../components/MintedNftsView';
 const PARCEL0_NFT_CONTRACT_ADDRESS = '0x209723a65844093Ad769d557a22742e0f661959d';
 const numberOfMintedNFTsSoFar = 1; // TODO trkaplan calculate this value
+import { useModal } from '../hooks/useModal';
+
 interface ConnectButtonProps {
   enabled?: boolean;
   onClick?(): void;
@@ -40,6 +43,7 @@ function hashToken(address: keyof Addresses, allowance: number) {
   return Buffer.from(ethers.utils.solidityKeccak256(['address', 'uint256'], [address, allowance]).slice(2), 'hex');
 }
 const Home: NextPage = () => {
+  const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal } = useModal();
   const [numberOfMintedNfts, setNumberOfMintedNfts] = useState<number>(0);
   const [eligibleNftCount, setEligibleNftCount] = useState<number>(0);
   const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
@@ -56,6 +60,7 @@ const Home: NextPage = () => {
     setEligibleNftCount(0);
     setNumberOfMintedNfts(0);
   }
+  // TODO trkaplan memoise tree
   const tree = new MerkleTree(
     Object.entries(addresses).map(([address, allowance]) => hashToken(address, allowance)),
     keccak256,
@@ -98,6 +103,8 @@ const Home: NextPage = () => {
         .allowListMint(eligibleNftCount, allowance, proof)
         .then((res: any) => {
           console.log('response', res);
+          handleCloseClaimModal();
+          handleOpenClaimSuccessModal();
         });
     } else {
       console.log('Already claimed!');
@@ -128,8 +135,9 @@ const Home: NextPage = () => {
         .then((result: ethers.BigNumber) => {
           const numberOfMinted = result.toNumber();
           if (allowance > numberOfMinted) {
-            setEligibleNftCount(1);
+            setEligibleNftCount(allowance);
             setNumberOfMintedNfts(0);
+            setCurrentView(VIEWS.INITIAL_VIEW); // in case user in on the minted nfts view and changes the wallet.
           } else if (allowance === numberOfMinted) {
             setNumberOfMintedNfts(numberOfMinted);
           }
@@ -191,7 +199,7 @@ const Home: NextPage = () => {
             {/* nftCount */}
             <button
               disabled={!address}
-              onClick={numberOfMintedNfts === 0 ? claim : showMintedNfts}
+              onClick={numberOfMintedNfts === 0 ? handleOpenClaimModal : showMintedNfts}
               className={numberOfMintedNfts > 0 ? 'border-button default-cursor' : ''}
             >
               {getClaimButtonText(numberOfMintedNfts, eligibleNftCount)}
@@ -199,6 +207,8 @@ const Home: NextPage = () => {
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>
         </div>
+        <ClaimModal onButtonClick={claim} eligibleNftsCount={eligibleNftCount} />
+        <ClaimSuccessModal eligibleNftsCount={eligibleNftCount} />
       </main>
     </>
   );
