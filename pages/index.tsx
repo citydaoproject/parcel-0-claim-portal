@@ -156,6 +156,7 @@ const Home: NextPage = () => {
             <ClaimButton
               walletAlreadyClaimed={walletAlreadyClaimed}
               allowance={allowance}
+              withinClaimPeriod={claimPeriodStart < Date.now() && claimPeriodEnd > Date.now()}
               disabled={!address}
               onClick={
                 walletAlreadyClaimed === 0 || walletAlreadyClaimed < allowance ? handleOpenClaimModal : showMintedNfts

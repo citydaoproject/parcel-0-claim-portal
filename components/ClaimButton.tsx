@@ -4,10 +4,15 @@ import DefaultButton, { DefaultButtonProps } from './common/DefaultButton';
 export interface ClaimButtonProps extends DefaultButtonProps {
   allowance: number;
   walletAlreadyClaimed: number;
+  withinClaimPeriod: boolean;
 }
 
-const ClaimButton = ({ allowance, walletAlreadyClaimed, disabled, ...rest }: ClaimButtonProps) => {
+const ClaimButton = ({ allowance, walletAlreadyClaimed, withinClaimPeriod, disabled, ...rest }: ClaimButtonProps) => {
   const getClaimButtonText = () => {
+    if (!withinClaimPeriod) {
+      return 'CLAIM PLOTS';
+    }
+
     if (allowance > 0 && allowance > walletAlreadyClaimed) {
       return `CLAIM ${allowance - walletAlreadyClaimed} PLOTS`;
     }
@@ -20,7 +25,10 @@ const ClaimButton = ({ allowance, walletAlreadyClaimed, disabled, ...rest }: Cla
   };
 
   return (
-    <DefaultButton {...rest} disabled={disabled || (walletAlreadyClaimed === 0 && allowance === 0)}>
+    <DefaultButton
+      {...rest}
+      disabled={disabled || !withinClaimPeriod || (walletAlreadyClaimed === 0 && allowance === 0)}
+    >
       {getClaimButtonText()}
     </DefaultButton>
   );
