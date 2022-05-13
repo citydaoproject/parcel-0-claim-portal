@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ReactTooltip from 'react-tooltip';
 import ClaimButton from '../components/ClaimButton';
 import { ClaimModal } from '../components/ClaimModal';
+import ClaimPeriodCountdown from '../components/ClaimPeriodCountdown';
 import { ClaimSuccessModal } from '../components/ClaimSuccessModal';
 import { ConnectButton } from '../components/ConnectButton';
 import { MintedNftsView } from '../components/MintedNftsView';
@@ -28,18 +29,15 @@ const Home: NextPage = () => {
   const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal } = useModal();
   const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
 
-  const {
-    account: address,
-    connect,
-    disconnect,
-    chainId,
-  } = useWallet();
+  const { account: address, connect, disconnect, chainId } = useWallet();
 
   const { parcelNFTDetails, refetch } = useParcelNFT(PARCEL0_NFT_CONTRACT_ADDRESSES[chainId ?? 0]);
 
   const allowance = parcelNFTDetails?.allowance || 0;
   const walletAlreadyClaimed = parcelNFTDetails?.walletAlreadyClaimed || 0;
   const totalSupply = parcelNFTDetails?.totalSupply || 0;
+  const claimPeriodStart = parcelNFTDetails?.claimPeriodStart || 0;
+  const claimPeriodEnd = parcelNFTDetails?.claimPeriodEnd || 0;
 
   const onWalletDisconnect = async () => {
     await disconnect();
@@ -84,11 +82,10 @@ const Home: NextPage = () => {
     }
   };
 
-  //TODO trkaplan check what happens when you visit with a browser that does not have metamask
-
   useEffect(() => {
     // noinspection JSIgnoredPromiseFromCall
     checkEligibility();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, parcelNFTDetails]);
 
   const checkEligibility = async () => {
@@ -127,8 +124,7 @@ const Home: NextPage = () => {
                 <div className="address">70 HAIL BASIN RD, POWELL, WYOMING</div>
               </div>
               <div className="message-box">
-                Claim ends in <span className="remaining-time">45 Days 00 Hours</span>{' '}
-                {/* TODO trkaplan use countdown component */}
+                <ClaimPeriodCountdown claimPeriodStart={claimPeriodStart} claimPeriodEnd={claimPeriodEnd} />
                 <br />
                 {address && (
                   <>
