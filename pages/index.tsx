@@ -4,6 +4,7 @@ import keccak256 from 'keccak256';
 import MerkleTree from 'merkletreejs';
 import { NextPage } from 'next';
 import { useEffect, useMemo, useState } from 'react';
+import { BeatLoader } from 'react-spinners';
 import ReactTooltip from 'react-tooltip';
 import ClaimButton from '../components/ClaimButton';
 import { ClaimModal } from '../components/ClaimModal';
@@ -97,8 +98,6 @@ const Home: NextPage = () => {
     if (allowance > walletAlreadyClaimed) {
       setCurrentView(VIEWS.INITIAL_VIEW); // in case user in on the minted nfts view and changes the wallet.
     }
-
-    // TODO trkaplan add loading indicator until eligibility check is complete
   };
 
   const parcelProperties = getParcelProperties(totalSupply, MAX_NFT_TO_MINT);
@@ -107,7 +106,9 @@ const Home: NextPage = () => {
       <div className="page-header">
         <div className="header-content">
           <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
-          {chainId && chainId !== 1 ? (
+          {address && !parcelNFTDetails ? (
+            <BeatLoader />
+          ) : chainId && chainId !== 1 ? (
             <div className="network-warning-container">Warning: Not on Main Ethereum Network</div>
           ) : null}
           <div className="connect-button-container">
