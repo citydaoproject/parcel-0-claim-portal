@@ -8,11 +8,8 @@ interface ConnectButtonProps {
   text?: string;
 }
 
-export const ConnectButton: FC<ConnectButtonProps> = ({ enabled, onClick, address }) => {
-  // TODO trkaplan disable if wallet is not installed
-  return (
-    <button disabled={!enabled} onClick={onClick} className="text-button">
-      {address ? shortenWalletAddress(address) : 'Connect'}
-    </button>
-  );
-};
+export const ConnectButton: FC<ConnectButtonProps> = ({ enabled, onClick, address }) => (
+  <button disabled={!enabled} onClick={onClick} className="text-button">
+    {address ? shortenWalletAddress(address) : 'Connect'}
+  </button>
+);

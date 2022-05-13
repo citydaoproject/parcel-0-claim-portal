@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { ethers } from 'ethers';
 import keccak256 from 'keccak256';
 import MerkleTree from 'merkletreejs';

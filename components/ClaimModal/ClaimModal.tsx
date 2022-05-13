@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-// TODO trkaplan disable no-img-element in eslint config
 import { FC, useState } from 'react';
 import Modal from 'react-modal';
 
