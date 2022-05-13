@@ -145,7 +145,9 @@ const Home: NextPage = () => {
               </div>
             </div>
             {currentView === VIEWS.INITIAL_VIEW ? (
-              <img src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" style={{ width: '761px' }} />
+              <div className="nft-art-home-wrapper">
+                <img className="nft-art-home" src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
+              </div>
             ) : (
               <MintedNftsView numberOfNfts={walletAlreadyClaimed} navigateToHome={navigateToHome} />
             )}

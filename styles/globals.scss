@@ -40,6 +40,9 @@ main {
 }
 .page-header .logo{
   height: 60px;
+  @media (max-width:1024px) {
+    padding-bottom: 1px;
+  }
 }
 
 .header-content {
@@ -68,6 +71,15 @@ main {
   padding-left: 56px;
   background-image: url("/../citydao-parcel-0-logo.png");
   background-repeat: no-repeat;
+  
+  @media (max-width:1024px) {
+    padding-left: 0;
+    background-position-x: center;
+    padding-top: 61px;
+    padding-bottom: 17px;
+    margin-top:12px;
+    text-align: center;
+  }
 }
 .parcel-zero {
   font-size: 18px;
@@ -76,6 +88,11 @@ main {
 .address-box .address{
   font-size:11px;
   color:var(--color-secondary)
+}
+.link-external-wrapper{
+  @media (max-width:1024px) {
+    text-align: center;
+  }
 }
 .link-external {
   background-image: url("/../icons/link_arrow.png");
@@ -90,15 +107,36 @@ main {
   display: flex;
   justify-content: space-between;
   margin-bottom: 18px;
+  @media (max-width:1024px) {
+    flex-direction: column;
+  }
 }
+
 .message-box {
   color: var(--color-secondary);
   height: 61px;
   text-align: right;
   padding-top: 7px;
+  @media (max-width:1024px) {
+    text-align: center;
+  }
 }
 .message-box .remaining-time {
   color: var(--color-text);
+}
+.nft-art-home-wrapper{
+  width: 100%;
+  max-width: 761px;
+  @media (max-width:1024px) {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+}
+.nft-art-home {
+ width:inherit
 }
 .address-line-1 {
   font-size: 18px;
@@ -120,16 +158,28 @@ main {
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
+  @media (max-width:1024px) {
+    flex-direction: column;
+    padding-top: 20px;
+    margin-bottom: 100px;
+  }
 }
+
 .content-left {
-  width: 761px;
+  max-width: 761px;
 }
 
 .content-right {
   width: 234px;
+  @media (max-width:1024px) {
+    width:100%
+  }
 }
 .properties {
   margin-top: 28px;
+  @media (max-width:1024px) {
+    margin-top: 48px;
+  }
 }
 .property{
   display: flex;
@@ -137,6 +187,12 @@ main {
   margin-bottom: 17px;
   border-bottom: 1px solid var(--color-dark-green);
   padding-bottom: 22px;
+  @media (max-width:1024px) {
+    padding-left: 40px;
+    padding-right: 40px;
+    margin-bottom: 23px;
+    padding-bottom: 16px;
+  }
 }
 .property img{
   align-self: center;
@@ -181,6 +237,12 @@ button {
   background: var(--color-primary);
   transition: background .1s ease-in;
   border: 2px solid transparent;
+  @media (max-width:1024px) {
+   width:81%;
+   margin: 0 auto;
+   display: block;
+  }
+
 }
 button:disabled {
   background: var(--color-disabled);
@@ -301,6 +363,11 @@ button.border-button {
 .step + .step {
   margin-top: 1rem;
 }
+.view-nfts {
+  @media (max-width:1024px) {
+    text-align: center;
+  }
+}
 .mintedNftImagesWrapper {
   margin-left: -16px;
   margin-top: 16px;
@@ -326,6 +393,10 @@ button.border-button {
   width: 338px;
   height: 338px;
   display: inline-block;
+  @media (max-width:1024px) {
+    width: 66%;
+    height: 100%;
+  }
 }
 .terms{
   margin-bottom: 24px;
