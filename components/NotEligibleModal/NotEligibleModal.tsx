@@ -16,9 +16,9 @@ export const NotEligibleModal: FC = () => {
         <img className="parcel-0-logo-md" src="/citydao-parcel-0-logo-md.png" alt="Parcel Zero NFT" />
         <div className="popup-title">Parcel 0 Claim</div>
         <div className="popup-content">
-          This wallet is not eligible to claim any Plots
+          This wallet is not eligible to claim any NFTs
           <div className="note">
-            Parcel 0 plots can only be claimed by
+            Parcel 0 NFTs can only be claimed by
             <br />
             <a target="_blank" href="https://citydao.io/" rel="noreferrer">
               CityDAO Citizen

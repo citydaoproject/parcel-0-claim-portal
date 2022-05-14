@@ -21,10 +21,10 @@ export const ClaimSuccessModal: FC<ClaimSuccessModalProps> = ({ eligibleNftsCoun
         <div className="popup-content">
           Success! You just claimed
           <span className="text-primary">
-            {` ${eligibleNftsCount}`} Parcel 0 Plot{eligibleNftsCount > 1 ? 's' : ''}.
+            {` ${eligibleNftsCount}`} Parcel 0 NFT{eligibleNftsCount > 1 ? 's' : ''}.
           </span>
           <p>
-            Plot location will be revealed on June 15th,
+            NFT location will be revealed on June 15th,
             <br /> 2022.
           </p>
         </div>

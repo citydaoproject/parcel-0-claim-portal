@@ -2,9 +2,9 @@ import { ParcelPropertyProps } from './components/ParcelProperty';
 
 export const getParcelProperties = (numberOfMinted: number, numberOfMaxNftToMint: number): ParcelPropertyProps[] => [
   {
-    name: 'TOTAL PLOTS',
+    name: 'TOTAL NFTS',
     value: `${numberOfMinted}/${numberOfMaxNftToMint}`,
-    tooltip: 'The number of plots will depend on how many Parcel 0 NFTs are minted.',
+    tooltip: 'The number of NFTs will depend on how many Parcel 0 NFTs are minted.',
     iconPath: '/icons/icon_plot.png',
   },
   {
