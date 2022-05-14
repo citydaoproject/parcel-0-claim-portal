@@ -1,10 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
-// TODO trkaplan disable no-img-element in eslint config
 import { FC, useState } from 'react';
 import Modal from 'react-modal';
 
 import { useModal } from '../../hooks/useModal';
-import { AGREEMENT_IPFS_URL } from '../../contants';
+import { AGREEMENT_IPFS_URL } from '../../constants/other';
 
 type ClaimModalProps = {
   eligibleNftsCount: number;

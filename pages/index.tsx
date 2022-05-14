@@ -1,159 +1,117 @@
-/* eslint-disable @next/next/no-img-element */
-import { useState, FC, useEffect } from 'react';
-import { NextPage } from 'next';
 import { ethers } from 'ethers';
-import ReactTooltip from 'react-tooltip';
-import { Iframe } from '../components/Iframe';
-import { ClaimModal } from '../components/ClaimModal';
-import { ConnectButton } from '../components/ConnectButton';
-import { ClaimSuccessModal } from '../components/ClaimSuccessModal';
-import { ParcelProperties } from '../containers/ParcelProperties';
-import useWallet from '../hooks/useWallet';
-import { ParcelNFT__factory } from '@citydao/parcel-contracts/dist/types/contracts/factories/ParcelNFT__factory';
-import { getParcelProperties } from '../parcel-properties';
 import keccak256 from 'keccak256';
 import MerkleTree from 'merkletreejs';
-import { addresses, Addresses } from '../data/whiteListedAddresses';
-import { shortenWalletAddress } from '../utils';
-import { MAX_NFT_TO_MINT, VIEWS } from '../contants';
+import { NextPage } from 'next';
+import { useEffect, useMemo, useState } from 'react';
+import { BeatLoader } from 'react-spinners';
+import ReactTooltip from 'react-tooltip';
+import ClaimButton from '../components/ClaimButton';
+import { ClaimModal } from '../components/ClaimModal';
+import ClaimPeriodCountdown from '../components/ClaimPeriodCountdown';
+import { ClaimSuccessModal } from '../components/ClaimSuccessModal';
+import { ConnectButton } from '../components/ConnectButton';
 import { MintedNftsView } from '../components/MintedNftsView';
-const PARCEL0_NFT_CONTRACT_ADDRESS = '0x209723a65844093Ad769d557a22742e0f661959d';
-const numberOfMintedNFTsSoFar = 1; // TODO trkaplan calculate this value
-import { useModal } from '../hooks/useModal';
-import { Button } from '../components/Button';
 import { NotEligibleModal } from '../components/NotEligibleModal';
+import { MAX_NFT_TO_MINT, PARCEL0_NFT_CONTRACT_ADDRESSES, VIEWS } from '../constants/other';
+import { ParcelProperties } from '../containers/ParcelProperties';
+import { addresses, Addresses } from '../data/whiteListedAddresses';
+import { useParcelNFT } from '../hooks/parcelNFT';
+import { useModal } from '../hooks/useModal';
+import useWallet from '../hooks/useWallet';
+import { getParcelProperties } from '../parcel-properties';
+import { shortenWalletAddress } from '../utils';
 
 // https://docs.ethers.io/v5/api/utils/hashing/#utils-solidityKeccak256
 function hashToken(address: keyof Addresses, allowance: number) {
   return Buffer.from(ethers.utils.solidityKeccak256(['address', 'uint256'], [address, allowance]).slice(2), 'hex');
 }
 const Home: NextPage = () => {
-  const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal, handleOpenNotEligibleModal } =
-    useModal();
-  const [numberOfMintedNfts, setNumberOfMintedNfts] = useState<number>(0);
-  const [eligibleNftCount, setEligibleNftCount] = useState<number>(0);
-  const [claimButtonText, setClaimButtonText] = useState<string>('CLAIM NFTS');
-  const [isIframeLoaded, setIsIframeLoaded] = useState<boolean>(false);
-  const [isEligible, setIsEligible] = useState<boolean>(false);
+  const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal } = useModal();
   const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
-  const {
-    account: address,
-    web3Provider: provider,
-    connect,
-    disconnect,
-    chainId, // TODO trkaplan warn users connected to different chain for better UX
-  } = useWallet();
-  function onWalletDisconnect() {
-    disconnect();
-    setEligibleNftCount(0);
-    setNumberOfMintedNfts(0);
-  }
-  // TODO trkaplan memoise tree
-  const tree = new MerkleTree(
-    Object.entries(addresses).map(([address, allowance]) => hashToken(address, allowance)),
-    keccak256,
-    { sortPairs: true },
+
+  const { account: address, connect, disconnect, chainId } = useWallet();
+
+  const { parcelNFTDetails, refetch } = useParcelNFT(PARCEL0_NFT_CONTRACT_ADDRESSES[chainId ?? 0]);
+
+  const allowance = parcelNFTDetails?.allowance || 0;
+  const walletAlreadyClaimed = parcelNFTDetails?.walletAlreadyClaimed || 0;
+  const totalSupply = parcelNFTDetails?.totalSupply || 0;
+  const claimPeriodStart = parcelNFTDetails?.claimPeriodStart || 0;
+  const claimPeriodEnd = parcelNFTDetails?.claimPeriodEnd || 0;
+
+  const onWalletDisconnect = async () => {
+    await disconnect();
+  };
+
+  const merkleTree = useMemo(
+    () =>
+      new MerkleTree(
+        Object.entries(addresses).map(([address, allowance]) => hashToken(address, allowance)),
+        keccak256,
+        { sortPairs: true },
+      ),
+    [],
   );
 
-  const handleLoad = () => {
-    setIsIframeLoaded(true);
-  };
-
-  function navigateToHome() {
+  const navigateToHome = () => {
     setCurrentView(VIEWS.INITIAL_VIEW);
-  }
-  function showMintedNfts() {
+  };
+
+  const showMintedNfts = () => {
     setCurrentView(VIEWS.MINTED_NFTS);
-  }
+  };
 
-  async function claim() {
-    const signer = provider.getSigner();
-    const parcel0Contract = new ParcelNFT__factory().attach(PARCEL0_NFT_CONTRACT_ADDRESS);
-    const allowance: number = Number(addresses[address?.toLowerCase() as keyof Addresses]);
-    const proof = tree.getHexProof(hashToken(address!, allowance));
-    const numberOfMinted = await parcel0Contract
-      .connect(signer)
-      .alreadyClaimed(address!)
-      .then((result: ethers.BigNumber) => result.toNumber());
-    if (allowance > numberOfMinted) {
-      parcel0Contract
-        .connect(signer)
-        .allowListMint(eligibleNftCount, allowance, proof)
-        .then((res: any) => {
-          console.log('response', res);
-          setEligibleNftCount(allowance);
-          handleCloseClaimModal();
-          handleOpenClaimSuccessModal();
-          setCurrentView(VIEWS.MINTED_NFTS);
-        });
+  const claim = async () => {
+    if (!parcelNFTDetails) {
+      console.warn('parcelNFT is not ready');
+      return;
+    }
+
+    const { parcelNFT } = parcelNFTDetails;
+
+    const proof = merkleTree.getHexProof(hashToken(address!, allowance));
+    if (allowance > walletAlreadyClaimed) {
+      const res = await parcelNFT.allowListMint(allowance, allowance, proof);
+      console.debug('response', res);
+
+      await refetch();
+      handleCloseClaimModal();
+      handleOpenClaimSuccessModal();
     } else {
-      console.log('Already claimed!');
-    }
-  }
-
-  //TODO trkaplan check what happens when you visit with a browser that does not have metamask
-
-  useEffect(() => {
-    if (address) {
-      // noinspection JSIgnoredPromiseFromCall
-      checkEligibility(address);
-    }
-  }, [address]);
-
-  useEffect(() => {
-    let text = '';
-    if (!address) {
-      text = 'CLAIM NFTS';
-    } else if (address && !isEligible) {
-      text = 'NOT ELIGIBLE';
-    } else if (numberOfMintedNfts > 0) {
-      text = `${numberOfMintedNfts} PLOTS CLAIMED`;
-    } else if (eligibleNftCount > 0) {
-      text = `CLAIM ${eligibleNftCount} PLOTS`; // TODO trkaplan replace PLOTS w/ NFTS
-    }
-    setClaimButtonText(text);
-  }, [numberOfMintedNfts, eligibleNftCount, isEligible, address]);
-
-  const checkEligibility = async (address: string) => {
-    try {
-      const signer = provider.getSigner();
-      const parcel0Contract = new ParcelNFT__factory().attach(PARCEL0_NFT_CONTRACT_ADDRESS);
-      const allowance: number = addresses[address.toLowerCase() as keyof Addresses];
-      if (allowance) {
-        //const proof = tree.getHexProof(hashToken(address, allowance));
-        // TODO trkaplan disable the claim button add loading indicator until eligibility check is complete
-        parcel0Contract
-          .connect(signer)
-          .alreadyClaimed(address)
-          .then((result: ethers.BigNumber) => {
-            const numberOfMinted = result.toNumber();
-            if (allowance > numberOfMinted) {
-              setEligibleNftCount(allowance);
-              setNumberOfMintedNfts(0);
-              setCurrentView(VIEWS.INITIAL_VIEW); // in case user in on the minted nfts view and changes the wallet.
-            } else if (allowance === numberOfMinted) {
-              setNumberOfMintedNfts(numberOfMinted);
-            }
-          });
-        setIsEligible(true);
-      } else if (!allowance && address) {
-        setIsEligible(false);
-        handleOpenNotEligibleModal();
-      }
-    } catch (error) {
-      console.log(error);
-      // TODO trkaplan handle errors.
+      console.warn('Already claimed!');
     }
   };
 
-  const parcelProperties = getParcelProperties(numberOfMintedNFTsSoFar, MAX_NFT_TO_MINT);
+  useEffect(() => {
+    // noinspection JSIgnoredPromiseFromCall
+    checkEligibility();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, parcelNFTDetails]);
+
+  const checkEligibility = async () => {
+    if (!parcelNFTDetails) {
+      console.debug('parcelNFT is not ready');
+      return;
+    }
+
+    if (allowance > walletAlreadyClaimed) {
+      setCurrentView(VIEWS.INITIAL_VIEW); // in case user in on the minted nfts view and changes the wallet.
+    }
+  };
+
+  const parcelProperties = getParcelProperties(totalSupply, MAX_NFT_TO_MINT);
   return (
     <>
       <div className="page-header">
         <div className="header-content">
           <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
+          {address && !parcelNFTDetails ? (
+            <BeatLoader />
+          ) : chainId && chainId !== 1 ? (
+            <div className="network-warning-container">Warning: Not on Main Ethereum Network</div>
+          ) : null}
           <div className="connect-button-container">
-            <ConnectButton onClick={connect} address={address!} enabled={true} />
+            <ConnectButton onClick={connect} address={address || undefined} enabled={true} />
           </div>
         </div>
       </div>
@@ -166,8 +124,7 @@ const Home: NextPage = () => {
                 <div className="address">70 HAIL BASIN RD, POWELL, WYOMING</div>
               </div>
               <div className="message-box">
-                Claim ends in <span className="remaining-time">45 Days 00 Hours</span>{' '}
-                {/* TODO trkaplan use countdown component */}
+                <ClaimPeriodCountdown claimPeriodStart={claimPeriodStart} claimPeriodEnd={claimPeriodEnd} />
                 <br />
                 {address && (
                   <>
@@ -192,35 +149,28 @@ const Home: NextPage = () => {
                 <img className="nft-art-home" src="/citydao-parcel-0-NFT-Art.png" alt="Parcel Zero NFT" />
               </div>
             ) : (
-              <MintedNftsView numberOfNfts={numberOfMintedNfts} navigateToHome={navigateToHome} />
+              <MintedNftsView numberOfNfts={walletAlreadyClaimed} navigateToHome={navigateToHome} />
             )}
           </div>
           <div className="content-right">
-            {
-              // TODO trkaplan disable if wallet is not installed
-            }
-            <Button
-              isEnabled={Boolean(address)}
+            <ClaimButton
+              walletAlreadyClaimed={walletAlreadyClaimed}
+              allowance={allowance}
+              withinClaimPeriod={claimPeriodStart < Date.now() && claimPeriodEnd > Date.now()}
+              disabled={!address}
               onClick={
-                numberOfMintedNfts === 0
-                  ? isEligible
-                    ? handleOpenClaimModal
-                    : handleOpenNotEligibleModal
-                  : showMintedNfts
+                walletAlreadyClaimed === 0 || walletAlreadyClaimed < allowance ? handleOpenClaimModal : showMintedNfts
               }
-              label={claimButtonText}
-              isBordered={numberOfMintedNfts > 0}
             />
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>
         </div>
-        <ClaimModal onClaim={claim} eligibleNftsCount={eligibleNftCount} />
-        <ClaimSuccessModal eligibleNftsCount={eligibleNftCount} />
+        <ClaimModal onClaim={claim} eligibleNftsCount={allowance} />
+        <ClaimSuccessModal eligibleNftsCount={allowance} />
         <NotEligibleModal />
         <ReactTooltip />
       </main>
     </>
   );
 };
-
 export default Home;

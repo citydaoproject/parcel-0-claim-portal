@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { ParcelProperty, ParcelPropertyProps } from '../../components/ParcelProperty';
-import { AGREEMENT_IPFS_URL } from '../../contants';
+import { AGREEMENT_IPFS_URL } from '../../constants/other';
+
 export const ParcelProperties: FC<{
   parcelProperties: ParcelPropertyProps[];
 }> = ({ parcelProperties }) => (

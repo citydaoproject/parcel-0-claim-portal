@@ -12,7 +12,7 @@ export const MintedNftsView: FC<MintedNftsViewProps> = ({ navigateToHome, number
     <br />
     <div className="mintedNftImagesWrapper">
       {[...Array(numberOfNfts)].map((value: undefined, index: number) => (
-        <img className="mintedNftImage" key={index} src="/citydao-parcel-0-NFT-Art-sm2.png" />
+        <img className="mintedNftImage" alt="Parcel 0 NFT Art" key={index} src="/citydao-parcel-0-NFT-Art-sm2.png" />
       ))}
     </div>
   </div>

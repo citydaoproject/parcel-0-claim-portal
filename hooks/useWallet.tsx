@@ -1,10 +1,13 @@
 // source: https://github.com/Bounty-Hunt-2022/bounty-hunt/blob/main/interface/state/wallet/hook.ts
-import { useCallback, useEffect } from "react";
-import { useAppContext } from "../context/StateProvider";
-import { ActionTypes } from "../reducer";
-import { ethers, providers } from "ethers";
-import Web3Modal from "web3modal";
-import WalletConnectProvider from "@walletconnect/web3-provider";
+import { Provider } from '@ethersproject/abstract-provider';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import WalletConnectProvider from '@walletconnect/web3-provider';
+import { providers } from 'ethers';
+import { useCallback, useEffect } from 'react';
+import Web3Modal from 'web3modal';
+import { useAppContext } from '../context/StateProvider';
+import { ActionTypes } from '../reducer';
+
 const INFURA_ID = process.env.NEXT_PUBLIC_INFURA_ID;
 
 const providerOptions = {
@@ -15,16 +18,26 @@ const providerOptions = {
     },
   },
 };
+
 let web3Modal: any;
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   web3Modal = new Web3Modal({
-    network: "mainnet", // optional
+    network: 'mainnet', // optional
     cacheProvider: true,
     providerOptions, // required
   });
 }
 
-const useWallet = () => {
+export interface WalletHook {
+  provider: Provider | null;
+  web3Provider: JsonRpcProvider | null;
+  account: string | null;
+  chainId: number | null;
+  connect: () => Promise<void>;
+  disconnect: () => Promise<void>;
+}
+
+const useWallet = (): WalletHook => {
   const { state, dispatch } = useAppContext();
   const provider = state.provider;
   const connect = useCallback(async function () {
@@ -51,51 +64,31 @@ const useWallet = () => {
   const disconnect = useCallback(
     async function () {
       await web3Modal.clearCachedProvider();
-      if (
-        state.provider?.disconnect &&
-        typeof state.provider.disconnect === "function"
-      ) {
-        await state.provider.disconnect();
+
+      const providerish: any = provider;
+      if (providerish?.disconnect && typeof providerish.disconnect === 'function') {
+        await providerish.disconnect();
       }
       dispatch({
         type: ActionTypes.resetWeb3Provider,
         payload: {},
       });
     },
-    [state.provider]
+    [state.provider],
   );
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
+      // noinspection JSIgnoredPromiseFromCall
       connect();
-    } else {
-      const rpcProvider = new ethers.providers.JsonRpcProvider(
-        "https://mainnet.infura.io/v3/" + INFURA_ID
-      );
-      dispatch({
-        type: ActionTypes.initialWeb3Provider,
-        payload: {
-          web3Provider: rpcProvider,
-        },
-      });
     }
   }, []);
-  // useEffect(() => {
-  //   if (provider) {
-  //     if (state.chainId !== Number("0x13881")) {
-  //       provider?.request({
-  //         method: "wallet_switchEthereumChain",
-  //         params: [{ chainId: "0x13881" }],
-  //       });
-  //     }
-  //   }
-  // }, [state, provider]);
 
   useEffect(() => {
     if (provider?.on) {
       const handleAccountsChanged = (accounts: string[]) => {
         // eslint-disable-next-line no-console
-        console.log("accountsChanged", accounts);
+        console.log('accountsChanged', accounts);
         dispatch({
           type: ActionTypes.setAddress,
           payload: { account: accounts[0] },
@@ -104,26 +97,26 @@ const useWallet = () => {
 
       // https://docs.ethers.io/v5/concepts/best-practices/#best-practices--network-changes
       const handleChainChanged = (_hexChainId: string) => {
-        console.log("chainChanged", _hexChainId);
+        console.log('chainChanged', _hexChainId);
         window.location.reload();
       };
 
       const handleDisconnect = (error: { code: number; message: string }) => {
         // eslint-disable-next-line no-console
-        console.log("disconnect why", error);
+        console.log('disconnect why', error);
         disconnect();
       };
 
-      provider.on("accountsChanged", handleAccountsChanged);
-      provider.on("chainChanged", handleChainChanged);
-      provider.on("disconnect", handleDisconnect);
+      provider.on('accountsChanged', handleAccountsChanged);
+      provider.on('chainChanged', handleChainChanged);
+      provider.on('disconnect', handleDisconnect);
 
       // Subscription Cleanup
       return () => {
         if (provider.removeListener) {
-          provider.removeListener("accountsChanged", handleAccountsChanged);
-          provider.removeListener("chainChanged", handleChainChanged);
-          provider.removeListener("disconnect", handleDisconnect);
+          provider.removeListener('accountsChanged', handleAccountsChanged);
+          provider.removeListener('chainChanged', handleChainChanged);
+          provider.removeListener('disconnect', handleDisconnect);
         }
       };
     }
