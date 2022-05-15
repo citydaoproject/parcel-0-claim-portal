@@ -24,8 +24,8 @@ export const ClaimSuccessModal: FC<ClaimSuccessModalProps> = ({ eligibleNftsCoun
             {` ${eligibleNftsCount}`} Parcel 0 NFT{eligibleNftsCount > 1 ? 's' : ''}.
           </span>
           <p>
-            NFT location will be revealed on June 15th,
-            <br /> 2022.
+            NFT location will be revealed after parcel minting
+            <br /> closes on <b>Friday, July 1st, 12:00pm MDT (GMT -6).</b>
           </p>
         </div>
         <button className="btn-close" onClick={handleCloseClaimSuccessModal}>
