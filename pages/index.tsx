@@ -105,7 +105,9 @@ const Home: NextPage = () => {
     <>
       <div className="page-header">
         <div className="header-content">
-          <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
+          <a href="https://citydao.io/" target="_blank" rel="noreferrer" alt="CityDAO">
+            <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
+          </a>
           {address && !parcelNFTDetails ? (
             <BeatLoader />
           ) : chainId && chainId !== 1 ? (
