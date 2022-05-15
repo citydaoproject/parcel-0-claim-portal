@@ -171,7 +171,7 @@ const Home: NextPage = () => {
         <ClaimModal onClaim={claim} eligibleNftsCount={allowance} onCancel={handleCloseClaimModal} />
         <ClaimSuccessModal eligibleNftsCount={allowance} />
         <NotEligibleModal />
-        <ReactTooltip />
+        <ReactTooltip backgroundColor="black" />
       </main>
     </>
   );
