@@ -166,7 +166,7 @@ const Home: NextPage = () => {
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>
         </div>
-        <ClaimModal onClaim={claim} eligibleNftsCount={allowance} />
+        <ClaimModal onClaim={claim} eligibleNftsCount={allowance} onCancel={handleCloseClaimModal} />
         <ClaimSuccessModal eligibleNftsCount={allowance} />
         <NotEligibleModal />
         <ReactTooltip />

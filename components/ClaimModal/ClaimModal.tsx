@@ -7,8 +7,9 @@ import { AGREEMENT_IPFS_URL } from '../../constants/other';
 type ClaimModalProps = {
   eligibleNftsCount: number;
   onClaim: () => void;
+  onCancel: () => void;
 };
-export const ClaimModal: FC<ClaimModalProps> = ({ eligibleNftsCount, onClaim }) => {
+export const ClaimModal: FC<ClaimModalProps> = ({ eligibleNftsCount, onClaim, onCancel }) => {
   const { isClaimModalOpen, handleCloseClaimModal } = useModal();
   const [isTermsAccepted, setIsTermsAccepted] = useState<boolean>(false);
   return (
@@ -19,6 +20,9 @@ export const ClaimModal: FC<ClaimModalProps> = ({ eligibleNftsCount, onClaim }) 
       className="react-modal-content"
     >
       <div className="claim-popup">
+        <div className="close-icon" onClick={onCancel}>
+          X
+        </div>
         <img className="parcel-0-logo-md" src="/citydao-parcel-0-logo-md.png" alt="Parcel Zero NFT" />
         <div className="popup-title">Parcel 0 Claim</div>
         You are eligible to claim
