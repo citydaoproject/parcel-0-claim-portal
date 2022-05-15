@@ -40,7 +40,7 @@ export const useContractLoader = <
   useEffect(() => {
     // noinspection JSIgnoredPromiseFromCall
     fetchValues();
-  }, [contract]);
+  }, [address]);
 
   const fetchValues = async () => {
     if (!contract) {
@@ -77,7 +77,7 @@ export const useInterfaceLoader = <C extends Contract, K extends KeyOfGetterFunc
   useEffect(() => {
     // noinspection JSIgnoredPromiseFromCall
     fetchValues();
-  }, [contract]);
+  }, [address]);
 
   const fetchValues = async () => {
     if (!contract) {
