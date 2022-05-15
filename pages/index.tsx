@@ -26,7 +26,8 @@ function hashToken(address: keyof Addresses, allowance: number) {
   return Buffer.from(ethers.utils.solidityKeccak256(['address', 'uint256'], [address, allowance]).slice(2), 'hex');
 }
 const Home: NextPage = () => {
-  const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal } = useModal();
+  const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal, handleOpenNotEligibleModal } =
+    useModal();
   const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
 
   const { account: address, connect, disconnect, chainId } = useWallet();
@@ -158,9 +159,9 @@ const Home: NextPage = () => {
               allowance={allowance}
               withinClaimPeriod={claimPeriodStart < Date.now() && claimPeriodEnd > Date.now()}
               disabled={!address}
-              onClick={
-                walletAlreadyClaimed === 0 || walletAlreadyClaimed < allowance ? handleOpenClaimModal : showMintedNfts
-              }
+              onClaim={handleOpenClaimModal}
+              onShowMinted={showMintedNfts}
+              onNotEligible={handleOpenNotEligibleModal}
             />
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>
