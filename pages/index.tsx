@@ -105,7 +105,7 @@ const Home: NextPage = () => {
     <>
       <div className="page-header">
         <div className="header-content">
-          <a href="https://citydao.io/" target="_blank" rel="noreferrer" alt="CityDAO">
+          <a href="https://citydao.io/" target="_blank" rel="noreferrer" title="CityDAO">
             <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
           </a>
           {address && !parcelNFTDetails ? (
