@@ -13,7 +13,7 @@ export const ParcelProperty: FC<ParcelPropertyProps> = ({ name, value, tooltip, 
       <div className="propName">
         {tooltip && (
           <div data-multiline={true} data-tip={tooltip}>
-            {name} <img src="/icons/info.png" alt="info" />
+            {name} <img src="/icons/info-icon.svg" alt="" />
           </div>
         )}{' '}
         {!tooltip && name}
