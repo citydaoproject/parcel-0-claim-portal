@@ -308,7 +308,9 @@ button.border-button {
 .color-primary {
   color: var(--color-primary);
 }
-
+.cursor-default {
+  cursor:default;
+}
 .steps-container {
   margin-top: 3rem;
   /* display: grid;
@@ -415,6 +417,7 @@ button.border-button {
   .checkbox-icon {
     width: 18px;
     height: 18px;
+    margin-bottom: -4px;
   }
 }
 
