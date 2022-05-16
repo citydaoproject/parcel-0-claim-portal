@@ -29,8 +29,7 @@ export const ClaimSuccessModal: FC<ClaimSuccessModalProps> = ({ eligibleNftsCoun
             src="/citydao-parcel-0-claimed-NFT-art.png"
           />
           <p>
-            NFT location will be revealed after parcel minting
-            <br /> closes on <b>Friday, July 1st, 12:00pm MDT (GMT -6).</b>
+            NFT location will be revealed after parcel minting closes on <b>Friday, July 1st, 12:00pm MDT (GMT -6).</b>
           </p>
         </div>
         <button className="btn-close" onClick={handleCloseClaimSuccessModal}>

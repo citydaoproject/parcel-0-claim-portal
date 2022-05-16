@@ -455,6 +455,10 @@ button.border-button {
   margin-bottom: 40px;
   margin-top: 43px;
   background-color: var(--color-bg2);
+  @media (max-width:1024px) {
+    margin-bottom: 22px;
+    margin-top: 16px;
+  }
 }
 .popup-title {
   font-size: 24px;
@@ -466,6 +470,14 @@ button.border-button {
 }
 .popup-content {
   letter-spacing: 0.3px;
+  > p {
+    max-width: 430px;
+    margin: 0 auto;
+    @media (max-width:1024px) {
+      letter-spacing: -0.7px;
+      font-size: 15px;
+    }
+  }
 }
 
 .text-primary {
