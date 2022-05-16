@@ -20,6 +20,16 @@ function MyApp({ Component, pageProps }: AppProps) {
           name="twitter:image"
           content="https://city.mirror.xyz/_next/image?url=https%3A%2F%2Fimages.mirror-media.xyz%2Fpublication-images%2FgRyN7V_4jheQ3fOQIMzNS.png&w=3840&q=90"
         />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://parcel-0.citydao.io/" />
+        <meta property="og:title" content="Parcel-0 | CityDAO" />
+        <meta property="og:description" content="CityDAO Parcel-0 NFT" />
+        <meta
+          property="og:image"
+          content="https://city.mirror.xyz/_next/image?url=https%3A%2F%2Fimages.mirror-media.xyz%2Fpublication-images%2FgRyN7V_4jheQ3fOQIMzNS.png&w=3840&q=90"
+        />
+
         <link rel="icon" href="/logo.jpeg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
