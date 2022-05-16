@@ -2,6 +2,8 @@
 import { Provider } from '@ethersproject/abstract-provider';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
+import Torus from '@toruslabs/torus-embed';
 import { providers } from 'ethers';
 import { useCallback, useEffect } from 'react';
 import Web3Modal from 'web3modal';
@@ -12,16 +14,31 @@ const INFURA_ID = process.env.NEXT_PUBLIC_INFURA_ID;
 
 const providerOptions = {
   walletconnect: {
-    package: WalletConnectProvider, // required
+    package: WalletConnectProvider,
     options: {
-      infuraId: INFURA_ID, // required
+      infuraId: INFURA_ID,
     },
+  },
+  coinbasewallet: {
+    package: CoinbaseWalletSDK,
+    options: {
+      appName: 'CityDAO Parcel-0',
+      infuraId: INFURA_ID,
+      darkMode: true,
+    },
+  },
+  torus: {
+    package: Torus,
+  },
+  binancechainwallet: {
+    package: true,
   },
 };
 
 let web3Modal: any;
 if (typeof window !== 'undefined') {
   web3Modal = new Web3Modal({
+    theme: 'dark',
     network: 'mainnet', // optional
     cacheProvider: true,
     providerOptions, // required

@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@citydao/parcel-contracts": "^0.0.4",
+    "@coinbase/wallet-sdk": "^3.1.0",
+    "@toruslabs/torus-embed": "^1.22.6",
     "@types/react-modal": "^3.13.1",
     "@walletconnect/web3-provider": "^1.7.8",
     "ethers": "^5.5.1",
