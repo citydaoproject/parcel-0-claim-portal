@@ -71,7 +71,7 @@ main {
   padding-left: 56px;
   background-image: url("/../citydao-parcel-0-logo.png");
   background-repeat: no-repeat;
-  
+
   @media (max-width:1024px) {
     padding-left: 0;
     background-position-x: center;
@@ -402,7 +402,17 @@ button.border-button {
       top: 0;
     }
   }
+
+  .checkbox-label {
+    cursor: pointer;
+  }
+
+  .checkbox-icon {
+    width: 18px;
+    height: 18px;
+  }
 }
+
 .parcel-art-container {
   margin-top: 36px;
   margin-bottom: 24px;
