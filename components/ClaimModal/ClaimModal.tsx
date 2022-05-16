@@ -32,7 +32,7 @@ export const ClaimModal: FC<ClaimModalProps> = ({ eligibleNftsCount, onClaim, on
         for
         <br /> free. You just need to pay the gas.
         <div className="parcel-art-container">
-          <img className="parcel-art" src={'/citydao-parcel-0-NFT-Art-sm.png'} alt="" />
+          <img className="parcel-art" src={'/citydao-parcel-0-claimed-NFT-art.png'} alt="" />
         </div>
         <div className="terms">
           <input
