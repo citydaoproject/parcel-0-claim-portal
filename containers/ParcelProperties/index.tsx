@@ -1,1 +1,1 @@
-export * from "./ParcelProperties";
+export * from './ParcelProperties';

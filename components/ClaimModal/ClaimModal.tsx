@@ -38,11 +38,17 @@ export const ClaimModal: FC<ClaimModalProps> = ({ eligibleNftsCount, onClaim, on
           <input
             id="cb1"
             type="checkbox"
+            style={{ display: 'none' }}
             checked={isTermsAccepted}
             onChange={(e) => setIsTermsAccepted(e.target.checked)}
           />
-          <label htmlFor="cb1">
-            Accept Parcel 0{' '}
+          <label htmlFor="cb1" className="checkbox-label">
+            {isTermsAccepted ? (
+              <img className="checkbox-icon" src="/icons/icon_check.png" alt="Checked" />
+            ) : (
+              <img className="checkbox-icon" src="/icons/icon_unchecked.png" alt="Unchecked" />
+            )}
+            &nbsp;Accept Parcel 0{' '}
             <a target="_blank" href={AGREEMENT_IPFS_URL} className="text-primary" rel="noreferrer">
               Terms & Conditions
             </a>

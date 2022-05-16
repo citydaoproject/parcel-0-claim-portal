@@ -72,7 +72,7 @@ const Home: NextPage = () => {
 
     const proof = merkleTree.getHexProof(hashToken(address!, allowance));
     if (allowance > walletAlreadyClaimed) {
-      const res = await parcelNFT.allowListMint(allowance, allowance, proof);
+      const res = await parcelNFT.allowListMint(allowance - walletAlreadyClaimed, allowance, proof);
       console.debug('response', res);
 
       await refetch();
@@ -127,10 +127,10 @@ const Home: NextPage = () => {
                 <div className="address">70 HAIL BASIN RD, POWELL, WYOMING</div>
               </div>
               <div className="message-box">
-                <ClaimPeriodCountdown claimPeriodStart={claimPeriodStart} claimPeriodEnd={claimPeriodEnd} />
-                <br />
                 {address && (
                   <>
+                    <ClaimPeriodCountdown claimPeriodStart={claimPeriodStart} claimPeriodEnd={claimPeriodEnd} />
+                    <br />
                     {`You are connected, ${shortenWalletAddress(address)}, `}
                     <a href="#" onClick={onWalletDisconnect}>
                       disconnect
@@ -168,7 +168,11 @@ const Home: NextPage = () => {
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>
         </div>
-        <ClaimModal onClaim={claim} eligibleNftsCount={allowance} onCancel={handleCloseClaimModal} />
+        <ClaimModal
+          onClaim={claim}
+          eligibleNftsCount={allowance - walletAlreadyClaimed}
+          onCancel={handleCloseClaimModal}
+        />
         <ClaimSuccessModal eligibleNftsCount={allowance} />
         <NotEligibleModal />
         <ReactTooltip backgroundColor="black" />
