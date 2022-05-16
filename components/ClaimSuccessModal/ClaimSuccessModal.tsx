@@ -23,6 +23,11 @@ export const ClaimSuccessModal: FC<ClaimSuccessModalProps> = ({ eligibleNftsCoun
           <span className="text-primary">
             {` ${eligibleNftsCount}`} Parcel 0 NFT{eligibleNftsCount > 1 ? 's' : ''}.
           </span>
+          <img
+            className="mintedNftImage in-success-popup"
+            alt="Parcel 0 NFT Art"
+            src="/citydao-parcel-0-claimed-NFT-art.png"
+          />
           <p>
             NFT location will be revealed after parcel minting
             <br /> closes on <b>Friday, July 1st, 12:00pm MDT (GMT -6).</b>

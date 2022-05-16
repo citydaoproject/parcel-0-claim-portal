@@ -382,6 +382,9 @@ button.border-button {
   margin-right: 12px;
   margin-bottom: 16px;
   border: 1px solid var(--color-primary);
+  &.in-success-popup {
+    margin-top: 20px;
+  }
 }
 .claim-popup {
   text-align: center;
@@ -449,8 +452,8 @@ button.border-button {
 }
 .btn-close {
   width: 134px;
-  margin-bottom: 53px;
-  margin-top: 55px;
+  margin-bottom: 40px;
+  margin-top: 43px;
   background-color: var(--color-bg2);
 }
 .popup-title {
@@ -464,9 +467,7 @@ button.border-button {
 .popup-content {
   letter-spacing: 0.3px;
 }
-.popup-content >p{
-  margin-top:16px;
-}
+
 .text-primary {
   color: var(--color-primary);
 }
