@@ -308,7 +308,9 @@ button.border-button {
 .color-primary {
   color: var(--color-primary);
 }
-
+.cursor-default {
+  cursor:default;
+}
 .steps-container {
   margin-top: 3rem;
   /* display: grid;
