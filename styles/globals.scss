@@ -223,7 +223,9 @@ a {
   color: var(--color-primary);
   text-decoration: underline;
 }
-
+div:focus, div:focus-visible {
+  outline: none;
+}
 button {
   font-family: 'Inter', sans-serif;
   font-size: 16px;
@@ -381,13 +383,33 @@ button.border-button {
 }
 .claim-popup {
   text-align: center;
-}
-.claim-popup .parcel-0-logo-md {
-  width: 87px;
+  @media (max-width:1024px) {
+    margin-top: -16px;
+  }
+  .parcel-0-logo-md {
+    width: 87px;
+  }
+  .close-icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding-right: 20px;
+    font-size: 26px;
+    padding-top: 14px;
+    color: var(--color-primary);
+    cursor: pointer;
+    @media (max-width:1024px) {
+      top: 0;
+    }
+  }
 }
 .parcel-art-container {
   margin-top: 36px;
   margin-bottom: 24px;
+  @media (max-width:1024px) {
+    margin-top: 16px;
+    margin-bottom: 6px;
+  }
 }
 .parcel-art {
   width: 338px;
@@ -409,6 +431,9 @@ button.border-button {
 .btn-accept{
   max-width: 338px;
   margin-bottom: 36px;
+  @media (max-width:1024px) {
+    margin-bottom: 16px;
+  }
 }
 .btn-close {
   width: 134px;
@@ -420,12 +445,15 @@ button.border-button {
   font-size: 24px;
   color: var(--color-primary);
   padding-bottom: 16px;
+  @media (max-width:1024px) {
+    padding-bottom: 6px;
+  }
 }
 .popup-content {
   letter-spacing: 0.3px;
 }
 .popup-content >p{
-  margin-top:7px;
+  margin-top:16px;
 }
 .text-primary {
   color: var(--color-primary);
@@ -461,4 +489,11 @@ button.border-button {
   line-height: 20px;
   width: 365px;
   margin: 42px auto 0;
+}
+
+.walletconnect-modal__mobile__toggle a {
+  color:black
+}
+.walletconnect-qrcode__base {
+  padding-top: 72px !important;
 }

@@ -18,12 +18,11 @@ export const NotEligibleModal: FC = () => {
         <div className="popup-content">
           This wallet is not eligible to claim any NFTs
           <div className="note">
-            Parcel 0 NFTs can only be claimed by
-            <br />
+            Parcel 0 plots can only be claimed by{' '}
             <a target="_blank" href="https://citydao.io/" rel="noreferrer">
               CityDAO Citizen
             </a>{' '}
-            NFT holders
+            NFT holders at the time of snapshot (May 16th, 12pm MDT, 2022)
           </div>
         </div>
         <button className="btn-close" onClick={handleCloseNotEligibleModal}>

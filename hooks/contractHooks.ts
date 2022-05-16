@@ -33,7 +33,7 @@ export const useContractLoader = <
 
   const contract = useMemo(
     () => attachContract<F, C>(factory, address, web3Provider) || undefined,
-    [factory, address, web3Provider],
+    [address, web3Provider],
   );
   const [values, setValues] = useState<ContractValues<C, K>>();
 

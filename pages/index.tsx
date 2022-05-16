@@ -105,7 +105,9 @@ const Home: NextPage = () => {
     <>
       <div className="page-header">
         <div className="header-content">
-          <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
+          <a href="https://citydao.io/" target="_blank" rel="noreferrer" title="CityDAO">
+            <img className="logo" src="/citydao-logo.png" alt="CityDAO" />
+          </a>
           {address && !parcelNFTDetails ? (
             <BeatLoader />
           ) : chainId && chainId !== 1 ? (
@@ -166,10 +168,10 @@ const Home: NextPage = () => {
             <ParcelProperties parcelProperties={parcelProperties} />
           </div>
         </div>
-        <ClaimModal onClaim={claim} eligibleNftsCount={allowance} />
+        <ClaimModal onClaim={claim} eligibleNftsCount={allowance} onCancel={handleCloseClaimModal} />
         <ClaimSuccessModal eligibleNftsCount={allowance} />
         <NotEligibleModal />
-        <ReactTooltip />
+        <ReactTooltip backgroundColor="black" />
       </main>
     </>
   );
