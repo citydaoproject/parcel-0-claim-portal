@@ -377,10 +377,11 @@ button.border-button {
   margin-right: -16px;
 }
 .mintedNftImage {
-  width: 232px;
-  margin-left: 16px;
-  margin-right: 16px;
+  width: 240px;
+  margin-left: 12px;
+  margin-right: 12px;
   margin-bottom: 16px;
+  border: 1px solid var(--color-primary);
 }
 .claim-popup {
   text-align: center;
