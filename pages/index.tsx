@@ -29,6 +29,7 @@ const Home: NextPage = () => {
   const { handleOpenClaimModal, handleCloseClaimModal, handleOpenClaimSuccessModal, handleOpenNotEligibleModal } =
     useModal();
   const [currentView, setCurrentView] = useState<VIEWS>(VIEWS.INITIAL_VIEW);
+  const [txId, setTxId] = useState('');
 
   const { account: address, connect, disconnect, chainId } = useWallet();
 
@@ -77,6 +78,7 @@ const Home: NextPage = () => {
 
       await refetch();
       handleCloseClaimModal();
+      setTxId(res.hash);
       handleOpenClaimSuccessModal();
     } else {
       console.warn('Already claimed!');
@@ -175,7 +177,7 @@ const Home: NextPage = () => {
           eligibleNftsCount={allowance - walletAlreadyClaimed}
           onCancel={handleCloseClaimModal}
         />
-        <ClaimSuccessModal eligibleNftsCount={allowance} />
+        <ClaimSuccessModal eligibleNftsCount={allowance} txId={txId} />
         <NotEligibleModal />
         <ReactTooltip backgroundColor="black" />
       </main>
