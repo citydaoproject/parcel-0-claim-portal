@@ -10,6 +10,12 @@ export const MintedNftsView: FC<MintedNftsViewProps> = ({ navigateToHome, number
       Go Back
     </a>
     <br />
+    <div className="view-nfts-title">
+      You claimed
+      <b>
+        {` ${numberOfNfts}`} Parcel 0 NFT{numberOfNfts > 1 ? 's' : ''}
+      </b>
+    </div>
     <div className="mintedNftImagesWrapper">
       {[...Array(numberOfNfts)].map((value: undefined, index: number) => (
         <img

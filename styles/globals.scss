@@ -51,9 +51,19 @@ main {
   justify-content: space-between;
 }
 .network-warning-container {
-  color: var(--color-warning);
-  align-items: center;
-  display: flex;
+  color: black;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  @media (max-width:1024px) {
+    font-size: 12px;
+  }
+  span{
+    padding: 3px;
+    background-color: var(--color-warning);
+  }
 }
 .connect-button-container {
   border-left: 1px solid var(--color-primary);
@@ -114,7 +124,6 @@ main {
 
 .message-box {
   color: var(--color-secondary);
-  height: 61px;
   text-align: right;
   padding-top: 7px;
   @media (max-width:1024px) {
@@ -369,25 +378,34 @@ button.border-button {
   margin-top: 1rem;
 }
 .view-nfts {
+  padding-top: 16px;
   @media (max-width:1024px) {
     text-align: center;
+    padding-top: 0;
+  }
+  .view-nfts-title {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 18px;
   }
 }
 .mintedNftImagesWrapper {
-  margin-left: -16px;
+  margin-left: -24px;
+  @media (max-width:1024px) {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+  }
   margin-top: 16px;
-  margin-right: -16px;
+  margin-right: -36px;
 }
 .mintedNftImage {
-  width: 240px;
-  margin-left: 12px;
-  margin-right: 12px;
-  margin-bottom: 16px;
-  border: 1px solid var(--color-primary);
+  width: 350px;
   &.in-success-popup {
     margin-top: 20px;
   }
 }
+
 .claim-popup {
   text-align: center;
   @media (max-width:1024px) {
@@ -416,7 +434,6 @@ button.border-button {
 
   .checkbox-icon {
     width: 18px;
-    height: 18px;
     margin-bottom: -4px;
   }
 }
