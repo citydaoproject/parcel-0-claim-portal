@@ -111,7 +111,9 @@ const Home: NextPage = () => {
           {address && !parcelNFTDetails ? (
             <BeatLoader />
           ) : chainId && chainId !== 1 ? (
-            <div className="network-warning-container">Warning: Not on Main Ethereum Network</div>
+            <div className="network-warning-container">
+              <span>Warning: Not on Main Ethereum Network</span>
+            </div>
           ) : null}
           <div className="connect-button-container">
             <ConnectButton onClick={connect} address={address || undefined} enabled={true} />
