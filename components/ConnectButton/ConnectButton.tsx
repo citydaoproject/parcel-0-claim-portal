@@ -9,7 +9,7 @@ interface ConnectButtonProps {
 }
 
 export const ConnectButton: FC<ConnectButtonProps> = ({ enabled, onClick, address }) => (
-  <button disabled={!enabled} onClick={onClick} className="text-button">
+  <button disabled={!enabled} onClick={onClick} className={address ? 'text-button cursor-default' : 'text-button'}>
     {address ? shortenWalletAddress(address) : 'Connect'}
   </button>
 );

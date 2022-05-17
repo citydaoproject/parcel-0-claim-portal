@@ -29,7 +29,6 @@ const ClaimButton = ({
   ...rest
 }: ClaimButtonProps) => {
   const claimStatus = determineClaimStatus(allowance, walletAlreadyClaimed, withinClaimPeriod);
-  console.log('ClaimStatus:', claimStatus);
 
   const getClaimButtonText = () => {
     switch (claimStatus) {
