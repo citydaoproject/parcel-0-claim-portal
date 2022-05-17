@@ -1,3 +1,14 @@
+# Important Note on Gihub CI Failure & yarn.lock
+
+There is a workaround for `ethereumjs-abi` dependency in yarn.lock file to prevent Github CI to fail.
+`yarn.lock` may change after running a local `yarn install` command. Make sure including this workaround  
+https://github.com/citydaoproject/parcel-0-claim-portal/commit/ae517e965fb154ef7ddc2c5c4b6c903acafe6309
+
+There is an open issue about this problem:
+https://github.com/citydaoproject/parcel-0-claim-portal/issues/23
+
+# Default Readme
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
