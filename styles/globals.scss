@@ -402,7 +402,7 @@ button.border-button {
 .mintedNftImage {
   width: 350px;
   &.in-success-popup {
-    margin-top: 20px;
+    width: 250px;
   }
 }
 
@@ -472,8 +472,8 @@ button.border-button {
 }
 .btn-close {
   width: 134px;
-  margin-bottom: 40px;
-  margin-top: 43px;
+  margin-bottom: 20px;
+  margin-top: 20px;
   background-color: var(--color-bg2);
   @media (max-width:1024px) {
     margin-bottom: 22px;
@@ -489,7 +489,7 @@ button.border-button {
   }
 }
 .popup-content {
-  letter-spacing: 0.3px;
+  letter-spacing: 0.1px;
   > p {
     max-width: 430px;
     margin: 0 auto;
@@ -498,8 +498,15 @@ button.border-button {
       font-size: 15px;
     }
   }
+  .success-message {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
-
+.text-small {
+  font-size: 14px;
+  line-height: 20px;
+}
 .text-primary {
   color: var(--color-primary);
 }
@@ -525,6 +532,9 @@ button.border-button {
   padding-top: 16px;
   background: #04110C;
   border: 1px solid var(--color-primary);
+  &.success-popup {
+    max-width: 532px;
+  }
 }
 
 .note {
